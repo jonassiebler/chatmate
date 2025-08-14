@@ -82,20 +82,57 @@ rm ~/Library/Application\ Support/Code/User/prompts/*.chatmode.md
 
 ## Contributing
 
-We welcome contributions! Whether it's:
+We welcome contributions from the community! Whether you're fixing bugs, adding new chatmates, or improving documentation, your help makes chatmate better for everyone.
 
-- 🐛 Bug fixes for existing chatmates
-- ✨ New chatmate agents
-- 📖 Documentation improvements
-- 🔧 Installation script enhancements
+### Development Workflow
 
-### How to Contribute
+We follow a structured workflow to maintain code quality:
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-chatmate`
-3. Add your chatmate to the `mates/` directory
-4. Test it thoroughly
-5. Submit a pull request
+- **`main`** - Production branch (stable releases)
+- **`dev`** - Development branch (integration and testing)
+- **`feature/*`** - Feature branches (your contributions)
+
+### Quick Contribution Guide
+
+1. **Fork** the repository
+2. **Create** a feature branch from `dev`
+3. **Make** your changes following our guidelines
+4. **Test** thoroughly using `./hire.sh`
+5. **Submit** a pull request to `dev` branch
+
+### Contribution Types
+
+- 🐛 **Bug fixes** for existing chatmates
+- ✨ **New chatmate** agents
+- 📖 **Documentation** improvements
+- 🔧 **Installation script** enhancements
+
+For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Follow our coding standards
+- Test your changes thoroughly
+- Provide clear documentation
+
+## Branch Protection & Review Process
+
+### Protected Branches
+
+- **`main`** and **`dev`** branches are protected
+- All changes require pull requests
+- Admin review is mandatory before merging
+- Direct commits restricted to admin group
+
+### Review Requirements
+
+- ✅ Automated tests must pass
+- ✅ Admin approval required
+- ✅ No merge conflicts
+- ✅ Follow contribution guidelines
+
+This ensures high-quality, stable releases for all users.
 
 ## Requirements
 
@@ -108,6 +145,25 @@ We welcome contributions! Whether it's:
 - ✅ macOS
 - ✅ Linux  
 - ✅ Windows (Git Bash/WSL)
+
+## Quality Assurance
+
+### Automated Testing
+
+Every contribution is automatically validated through our CI/CD pipeline:
+
+- 🔍 **Structure validation** - Repository and file organization
+- 🤖 **Chatmate validation** - Syntax and naming conventions
+- 🧪 **Installation testing** - Cross-platform compatibility
+- 📝 **Documentation linting** - Markdown formatting and links
+- 🔒 **Security scanning** - Sensitive data detection
+
+### Continuous Integration
+
+- **GitHub Actions** automatically test all pull requests
+- **Multi-platform testing** on Ubuntu and macOS
+- **Automated releases** with comprehensive changelogs
+- **Link checking** ensures documentation stays current
 
 ## License
 

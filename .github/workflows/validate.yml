@@ -1,0 +1,291 @@
+name: Validate Chatmates
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    name: Validate Repository Structure
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate directory structure
+      run: |
+        echo "🔍 Validating repository structure..."
+        
+        # Check required directories
+        required_dirs=(
+          "mates"
+          ".github"
+          ".github/workflows"
+          ".github/ISSUE_TEMPLATE"
+        )
+        
+        for dir in "${required_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            echo "❌ Missing required directory: $dir"
+            exit 1
+          else
+            echo "✅ Found directory: $dir"
+          fi
+        done
+        
+        # Check required files
+        required_files=(
+          "README.md"
+          "CONTRIBUTING.md"
+          "hire.sh"
+          ".github/pull_request_template.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Missing required file: $file"
+            exit 1
+          else
+            echo "✅ Found file: $file"
+          fi
+        done
+        
+        echo "🎉 Repository structure validation passed!"
+
+  validate-chatmates:
+    runs-on: ubuntu-latest
+    name: Validate Chatmate Files
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate chatmate syntax
+      run: |
+        echo "🤖 Validating chatmate files..."
+        
+        # Check if mates directory exists and has content
+        if [ ! -d "mates" ]; then
+          echo "❌ mates directory not found"
+          exit 1
+        fi
+        
+        # Count chatmate files
+        chatmate_count=$(find mates -name "*.chatmode.md" | wc -l)
+        echo "📊 Found $chatmate_count chatmate files"
+        
+        if [ $chatmate_count -eq 0 ]; then
+          echo "❌ No chatmate files found in mates directory"
+          exit 1
+        fi
+        
+        # Validate each chatmate file
+        error_count=0
+        
+        for file in mates/*.chatmode.md; do
+          if [ -f "$file" ]; then
+            echo "🔍 Validating: $(basename "$file")"
+            
+            # Check file naming convention
+            if [[ ! "$(basename "$file")" =~ \.chatmode\.md$ ]]; then
+              echo "❌ Invalid file extension: $(basename "$file")"
+              ((error_count++))
+              continue
+            fi
+            
+            # Check if file is not empty
+            if [ ! -s "$file" ]; then
+              echo "❌ Empty file: $(basename "$file")"
+              ((error_count++))
+              continue
+            fi
+            
+            # Check for basic content structure
+            if ! grep -q "^#" "$file"; then
+              echo "⚠️ Warning: No headers found in $(basename "$file")"
+            fi
+            
+            # Check file size (should be reasonable for a prompt)
+            file_size=$(wc -c < "$file")
+            if [ $file_size -gt 50000 ]; then
+              echo "⚠️ Warning: Large file size for $(basename "$file"): $file_size bytes"
+            fi
+            
+            echo "✅ $(basename "$file") passed validation"
+          fi
+        done
+        
+        if [ $error_count -gt 0 ]; then
+          echo "❌ Found $error_count validation errors"
+          exit 1
+        fi
+        
+        echo "🎉 All chatmate files validated successfully!"
+
+  test-installation:
+    runs-on: ${{ matrix.os }}
+    name: Test Installation Script
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Test hire.sh script
+      run: |
+        echo "🧪 Testing installation script on ${{ runner.os }}..."
+        
+        # Make script executable
+        chmod +x hire.sh
+        
+        # Check script syntax
+        bash -n hire.sh
+        echo "✅ Script syntax check passed"
+        
+        # Test dry run (without actual installation)
+        echo "🔍 Testing script logic..."
+        
+        # Verify mates directory exists
+        if [ ! -d "mates" ]; then
+          echo "❌ mates directory not found"
+          exit 1
+        fi
+        
+        # Count files to be copied
+        file_count=$(find mates -name "*.md" | wc -l)
+        echo "📁 Found $file_count markdown files to install"
+        
+        if [ $file_count -eq 0 ]; then
+          echo "❌ No markdown files found in mates directory"
+          exit 1
+        fi
+        
+        echo "✅ Installation script test passed"
+
+  lint-markdown:
+    runs-on: ubuntu-latest
+    name: Lint Markdown Files
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install markdownlint
+      run: npm install -g markdownlint-cli
+      
+    - name: Lint markdown files
+      run: |
+        echo "📝 Linting markdown files..."
+        
+        # Create markdownlint config
+        cat > .markdownlint.json << 'EOF'
+        {
+          "MD013": false,
+          "MD041": false,
+          "MD033": false,
+          "MD034": false
+        }
+        EOF
+        
+        # Lint all markdown files
+        markdownlint "**/*.md" --config .markdownlint.json
+        
+        echo "✅ Markdown linting completed"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run security checks
+      run: |
+        echo "🔒 Running security checks..."
+        
+        # Check for potential sensitive information
+        echo "🔍 Checking for sensitive data patterns..."
+        
+        # Define patterns to check
+        sensitive_patterns=(
+          "password"
+          "secret"
+          "token"
+          "api[_-]?key"
+          "private[_-]?key"
+          "access[_-]?key"
+        )
+        
+        error_count=0
+        
+        for pattern in "${sensitive_patterns[@]}"; do
+          if grep -ri "$pattern" mates/ --exclude-dir=.git; then
+            echo "⚠️ Found potential sensitive data: $pattern"
+            ((error_count++))
+          fi
+        done
+        
+        # Check for executable files in mates directory
+        if find mates/ -type f -executable | grep -q .; then
+          echo "⚠️ Found executable files in mates directory"
+          find mates/ -type f -executable
+          ((error_count++))
+        fi
+        
+        if [ $error_count -gt 0 ]; then
+          echo "❌ Security scan found $error_count issues"
+          echo "ℹ️ Please review the flagged content before proceeding"
+        else
+          echo "✅ Security scan passed"
+        fi
+
+  check-links:
+    runs-on: ubuntu-latest
+    name: Check Links
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install markdown-link-check
+      run: npm install -g markdown-link-check
+      
+    - name: Check links in markdown files
+      run: |
+        echo "🔗 Checking links in markdown files..."
+        
+        # Create config file for link checking
+        cat > .markdown-link-check.json << 'EOF'
+        {
+          "ignorePatterns": [
+            {
+              "pattern": "^https://www.google.com"
+            }
+          ],
+          "timeout": "10s",
+          "retryOn429": true,
+          "aliveStatusCodes": [200, 206]
+        }
+        EOF
+        
+        # Check links in all markdown files
+        find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | \
+        xargs -I {} markdown-link-check {} --config .markdown-link-check.json
+        
+        echo "✅ Link checking completed"
