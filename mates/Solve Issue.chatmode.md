@@ -29,7 +29,7 @@ Transform GitHub issues into implemented solutions by:
 - Select appropriate issue based on clear requirements and technical feasibility
 - Validate issue still exists in current codebase
 - Create feature branch: `feature/issue-[number]-[brief-description]`
-- Link branch to issue via comment
+- Link branch to issue using `gh issue develop [issue-number] --checkout`
 
 ### 2. Analysis & Planning
 - Parse issue description thoroughly for all requirements
