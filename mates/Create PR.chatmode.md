@@ -62,10 +62,13 @@ Transform completed feature branches into merge-ready pull requests by:
 - **Ensure no breaking changes** to existing functionality
 
 ### 4. Testing & Quality Assurance Phase ⚠️ CRITICAL
+- **Analyze existing test framework** - examine test architecture, runners, and configuration before proceeding
+- **Study centrally managed test utilities** - identify shared mocks, fixtures, helpers, and setup patterns
+- **Understand project testing conventions** - learn established patterns and naming conventions
 - **Run complete test suite** to verify no regressions: `npm test` or equivalent
 - **Analyze test failures** if any occur - understand root cause and fix before proceeding
 - **Identify untested changes** - any new functionality without corresponding tests
-- **Create missing tests** for new features, components, or functions as REQUIRED
+- **Create missing tests** using established framework patterns and shared utilities (see next phase)
 - **Validate test coverage** - ensure adequate coverage for all new code paths
 - **Run build process** to ensure no compilation errors
 - **Execute linting and formatting** checks
@@ -75,13 +78,20 @@ Transform completed feature branches into merge-ready pull requests by:
 - **Test edge cases** and error scenarios
 
 ### 5. Test Creation Requirements Phase ⚠️ MANDATORY
+- **Analyze existing test framework** - deeply examine current testing architecture and patterns
+- **Identify centrally managed test utilities** - find shared functions, mocks, fixtures, and helpers
+- **Evaluate reusable test components** - discover existing test setup, teardown, and configuration utilities
+- **Study established testing patterns** - understand project-specific testing conventions and best practices
+- **Map testing infrastructure** - identify test runners, assertion libraries, mocking frameworks, and utilities
 - **Scan for untested code** - identify any new functions, components, or features without tests
-- **Create unit tests** for new business logic and utility functions
-- **Add component tests** for new UI components (React Testing Library, etc.)
-- **Write integration tests** for new API endpoints or data flows
-- **Include edge case testing** - null/undefined values, empty arrays, error conditions
-- **Test user interactions** for new UI features (clicks, form submissions, navigation)
-- **Validate error handling** - ensure proper error states and recovery
+- **Reuse existing test utilities** - leverage shared mocks, fixtures, helper functions, and setup patterns
+- **Create unit tests** using established patterns and centrally managed utilities
+- **Add component tests** following project conventions (React Testing Library, etc.) with shared setup
+- **Write integration tests** reusing existing test data, mocks, and configuration patterns
+- **Include edge case testing** - null/undefined values, empty arrays, error conditions using shared utilities
+- **Test user interactions** leveraging existing interaction helpers and shared test patterns
+- **Validate error handling** using established error testing utilities and mock patterns
+- **Maintain consistency** - ensure new tests follow existing naming conventions and structure
 - **Document test rationale** - explain what each test validates and why it's important
 - **NEVER create PR without tests** - testing is a blocking requirement for all new functionality
 
@@ -142,9 +152,13 @@ Based on common issues encountered, ensure:
 - **Maintain traceability** - clear connection between issue, branch, and commits
 
 ### Comprehensive Testing Requirements ⚠️ NON-NEGOTIABLE
+- **FIRST: Analyze test framework architecture** - understand testing infrastructure before writing any tests
+- **Discover centrally managed utilities** - identify shared mocks, fixtures, helpers, and configuration patterns
+- **Study existing test patterns** - learn project conventions for naming, structure, and organization
+- **Reuse established test infrastructure** - leverage existing setup/teardown, utilities, and mock patterns
 - **Zero tolerance for untested code** - every new function, component, or feature MUST have tests
 - **Analyze test failures immediately** - never proceed with failing tests without understanding root cause
-- **Create missing tests before PR** - identify gaps and write comprehensive test coverage
+- **Create missing tests before PR** - identify gaps and write comprehensive test coverage using shared utilities
 - **Test all code paths** - including edge cases, error conditions, and boundary scenarios
 - **Validate test quality** - ensure tests are meaningful, not just coverage checkmarks
 - **Run full test suite** - verify no regressions in existing functionality
