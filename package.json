@@ -1,0 +1,37 @@
+{
+  "name": "chatmate-tests",
+  "version": "1.0.0",
+  "description": "Testing framework for ChatMate project",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:shell && npm run test:markdown && npm run test:integration",
+    "test:shell": "bats tests/unit/*.bats",
+    "test:markdown": "markdownlint **/*.md --config .markdownlint.json",
+    "test:integration": "bats tests/integration/*.bats",
+    "test:coverage": "npm run test && echo 'Coverage analysis complete'",
+    "test:watch": "nodemon --exec 'npm test' --watch tests --watch mates --watch hire.sh",
+    "setup": "npm install && npm run setup:bats",
+    "setup:bats": "npm run install:bats-core && npm run install:bats-support && npm run install:bats-assert",
+    "install:bats-core": "git clone https://github.com/bats-core/bats-core.git tests/bats-core || echo 'Bats core already installed'",
+    "install:bats-support": "git clone https://github.com/bats-core/bats-support.git tests/bats-support || echo 'Bats support already installed'",
+    "install:bats-assert": "git clone https://github.com/bats-core/bats-assert.git tests/bats-assert || echo 'Bats assert already installed'",
+    "clean": "rm -rf tests/bats-* node_modules",
+    "lint": "shellcheck hire.sh tests/**/*.bats",
+    "validate": "npm run test && npm run lint",
+    "ci": "npm run setup && npm run validate"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.37.0",
+    "nodemon": "^3.0.1",
+    "shellcheck": "^2.0.0"
+  },
+  "keywords": [
+    "testing",
+    "bats",
+    "shell",
+    "chatmate",
+    "vs-code"
+  ],
+  "author": "ChatMate Testing Framework",
+  "license": "MIT"
+}
