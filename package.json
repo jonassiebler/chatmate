@@ -1,0 +1,56 @@
+{
+  "name": "chatmate",
+  "version": "1.0.0",
+  "description": "Open source collection of specialized AI agents for VS Code Copilot Chat",
+  "main": "lib/index.js",
+  "bin": {
+    "chatmate": "./bin/chatmate.js"
+  },
+  "scripts": {
+    "start": "node bin/chatmate.js",
+    "test": "cd tests && ./run-tests.sh",
+    "prepublishOnly": "npm test",
+    "postinstall": "echo '✅ ChatMate CLI installed successfully! Run \"chatmate --help\" to get started.'"
+  },
+  "keywords": [
+    "ai",
+    "copilot",
+    "chatmate",
+    "cli",
+    "vscode",
+    "agents",
+    "chatmode",
+    "development",
+    "automation"
+  ],
+  "author": "Jonas Siebler <jonas@siebler.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonassiebler/chatmate.git"
+  },
+  "homepage": "https://github.com/jonassiebler/chatmate",
+  "bugs": {
+    "url": "https://github.com/jonassiebler/chatmate/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "update-notifier": "^6.0.2",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "mates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "preferGlobal": true
+}
