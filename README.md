@@ -17,6 +17,19 @@ Chatmates are custom Copilot Chatmodes, configured with specialized agentic skil
 
 ## Quick Start
 
+### Option 1: Global CLI Installation (Recommended)
+
+Install ChatMate globally for the best experience with automatic updates:
+
+```bash
+npm install -g chatmate
+chatmate hire
+```
+
+Then restart VS Code to use your new chatmates.
+
+### Option 2: Direct Installation
+
 1. **Clone the repository:**
 
    ```bash
@@ -32,22 +45,120 @@ Chatmates are custom Copilot Chatmodes, configured with specialized agentic skil
 
 3. **Restart VS Code** to use your new chatmates
 
+## CLI Usage
+
+The ChatMate CLI provides a powerful command-line interface for managing your chatmate agents:
+
+### Install all chatmates
+```bash
+chatmate hire
+```
+
+### Install specific chatmates
+```bash
+chatmate hire --specific "Solve Issue" "Create PR"
+```
+
+### Force reinstall (overwrite existing)
+```bash
+chatmate hire --force
+```
+
+### List available and installed chatmates
+```bash
+chatmate list
+```
+
+### Show only available chatmates
+```bash
+chatmate list --available
+```
+
+### Show only installed chatmates
+```bash
+chatmate list --installed
+```
+
+### Uninstall specific chatmates
+```bash
+chatmate uninstall "Solve Issue"
+```
+
+### Uninstall all chatmates
+```bash
+chatmate uninstall --all
+```
+
+### Check installation status
+```bash
+chatmate status
+```
+
+### Show configuration
+```bash
+chatmate config --show
+```
+
+### Get help
+```bash
+chatmate --help
+chatmate hire --help
+```
+
+## Auto-Updates
+
+When installed globally via npm, ChatMate automatically checks for updates and notifies you when new versions are available:
+
+```bash
+npm update -g chatmate
+```
+
+## Migration from hire.sh
+
+If you've been using the `hire.sh` script, you can easily migrate to the CLI:
+
+1. **Install the CLI globally:**
+   ```bash
+   npm install -g chatmate
+   ```
+
+2. **The CLI provides the same functionality:**
+   - `./hire.sh` → `chatmate hire`
+   - Plus many additional features like selective installation, status checking, and auto-updates
+
+3. **Keep using hire.sh if preferred** - both methods work identically and maintain the same VS Code integration.
+
 ## Repository Structure
 
 ```text
 chatmate/
+├── bin/            # CLI executable and entry point
+├── lib/            # Core CLI logic and ChatMate manager
 ├── mates/          # Chatmate markdown files (the AI agents)
-├── hire.sh         # Installation script
+├── tests/          # Comprehensive test suite (Bats framework)
+├── hire.sh         # Legacy installation script (still supported)
+├── package.json    # npm package configuration
 └── README.md       # This file
 ```
 
-## Installation
+## Installation Methods
 
-### hire.sh
+### Global CLI Installation (Recommended)
 
-The installation script that copies all chatmates to your VS Code prompts folder.
+The recommended way to install and manage chatmates:
 
 ```bash
+npm install -g chatmate
+chatmate hire
+```
+
+### Legacy Script Installation
+
+The original installation method, still fully supported:
+
+```bash
+git clone https://github.com/jonassiebler/chatmate.git
+cd chatmate
 ./hire.sh
 ```
 
@@ -68,7 +179,17 @@ If you prefer to install chatmates manually or selectively:
 
 ## Uninstalling
 
-To remove chatmates, simply delete them from your VS Code prompts directory:
+### Using CLI (Recommended)
+```bash
+# Uninstall specific chatmates
+chatmate uninstall "Solve Issue" "Create PR"
+
+# Uninstall all chatmates
+chatmate uninstall --all
+```
+
+### Manual Removal
+To remove chatmates manually, delete them from your VS Code prompts directory:
 
 ```bash
 rm ~/Library/Application\ Support/Code/User/prompts/*.chatmode.md
@@ -77,8 +198,28 @@ rm ~/Library/Application\ Support/Code/User/prompts/*.chatmode.md
 ## Creating Custom Chatmates
 
 1. Use the **Create Chatmode** agent to help build new chatmates
-2. Add your custom `.md` files to the `mates/` directory
-3. Run `./hire.sh` to install them
+2. Add your custom `.chatmode.md` files to the `mates/` directory
+3. Run `chatmate hire` or `./hire.sh` to install them
+
+## Development & Testing
+
+ChatMate includes a comprehensive testing framework:
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test suites
+npm run test:cli        # CLI functionality tests
+npm run test:shell      # Shell script tests
+npm run test:integration # Integration tests
+
+# Set up testing environment
+npm run setup
+
+# Watch mode for development
+npm run test:watch
+```
 
 ## Contributing
 
