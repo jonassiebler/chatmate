@@ -1,0 +1,81 @@
+.nh
+.TH "chatmate-hire" "1" "Aug 2025" "ChatMate CLI" "ChatMate Manual"
+
+.SH NAME
+chatmate-hire - Install chatmate agents for VS Code Copilot Chat
+
+
+.SH SYNOPSIS
+\fBchatmate hire [chatmate names...] [flags]\fP
+
+
+.SH DESCRIPTION
+Install chatmate agents to enhance your VS Code Copilot Chat experience.
+
+.PP
+🎯 Installation Options:
+• Install all available chatmates (recommended for first-time users)
+• Install specific chatmates by name
+• Force reinstall to update existing chatmates
+
+.PP
+📦 Available Chatmates Include:
+• Solve Issue: Systematic debugging and problem resolution
+• Code Review: Expert code analysis and improvement suggestions
+• Testing: Comprehensive test generation and debugging
+• Create PR: Pull request creation and management
+• Documentation: Technical writing and API documentation
+
+.PP
+🔧 Installation Process:
+1. Validates VS Code installation and prompts directory
+2. Copies chatmate files to VS Code user prompts directory
+3. Handles existing files with smart overwrite logic
+4. Reports installation status and any conflicts
+
+.PP
+⚠️  Requirements:
+• VS Code installed and accessible
+• VS Code Copilot Chat extension enabled
+• Write permissions to VS Code user directory
+
+
+.SH OPTIONS
+\fB-f\fP, \fB--force\fP[=false]
+	Force reinstall existing chatmates
+
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for hire
+
+.PP
+\fB--specific\fP=[]
+	Install specific chatmates by name
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+\fB-v\fP, \fB--verbose\fP[=false]
+	Verbose output
+
+
+.SH EXAMPLE
+.EX
+  # Install all available chatmates (recommended for new users)
+  chatmate hire
+  
+  # Install specific chatmates by name (preferred method)
+  chatmate hire "Solve Issue" "Code Review" "Testing"
+  
+  # Install specific chatmates using flags (alternative method)
+  chatmate hire --specific "Solve Issue" --specific "Testing"
+  
+  # Force reinstall all chatmates (useful after updates)
+  chatmate hire --force
+  
+  # Force reinstall specific chatmates
+  chatmate hire --force "Solve Issue" "Testing"
+.EE
+
+
+.SH SEE ALSO
+\fBchatmate(1)\fP

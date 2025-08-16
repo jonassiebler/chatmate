@@ -1,5 +1,6 @@
 ---
-description: 'Testing Framework Agent'
+description:
+author: 'ChatMate' 'Testing Framework Agent'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
@@ -59,7 +60,7 @@ Help users transform their untested codebases into well-tested, reliable softwar
 ### Testing Types
 
 - **Unit Testing**: Function and component testing
-- **Integration Testing**: Component interaction testing  
+- **Integration Testing**: Component interaction testing
 - **End-to-End Testing**: Full user workflow testing
 - **API Testing**: REST/GraphQL endpoint testing
 - **Visual Testing**: UI regression testing
@@ -81,7 +82,7 @@ describe('calculateTax', () => {
     test('calculates tax correctly', () => {
         expect(calculateTax(1000, 0.1)).toBe(100);
     });
-    
+
     test('throws error for negative input', () => {
         expect(() => calculateTax(-1000, 0.1)).toThrow('Invalid input');
     });

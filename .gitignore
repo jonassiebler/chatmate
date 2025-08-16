@@ -1,7 +1,7 @@
-# Node.js dependencies
+# Node.js dependencies (legacy - can be removed if not needed)
 node_modules/
 
-# npm/yarn logs
+# npm/yarn logs (legacy - can be removed if not needed)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -18,6 +18,18 @@ Thumbs.db
 
 # Test coverage reports
 coverage/
+coverage.out
+coverage.html
+
+# Go test binaries and build artifacts
+*.test
+chatmate
+chatmate.exe
+
+# Build outputs
+/build/output/
+/dist/
+/bin/
 
 # Temporary files
 *.tmp

@@ -1,5 +1,6 @@
 ---
-description: 'Merge PR'
+description:
+author: 'ChatMate' 'Merge PR'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
@@ -100,7 +101,7 @@ gh pr view [number] --json mergeable,state
 # Execute normal merge (preserve branch)
 gh pr merge [number] --merge
 
-# Verify merge completion  
+# Verify merge completion
 gh pr view [number] --json state,merged,mergedAt
 ```
 
@@ -177,14 +178,14 @@ gh api repos/:owner/:repo/pulls/[number]          # Detailed API data
 
 ## Success Criteria
 
-✅ **Branch state validated** and working tree clean  
-✅ **PR readiness confirmed** with approvals and CI/CD success  
-✅ **Appropriate merge strategy** selected based on branch workflow  
-✅ **Merge executed successfully** using GitHub CLI  
-✅ **Branch cleanup completed** according to strategy  
-✅ **Local git state synchronized** with remote changes  
-✅ **Workflow compliance maintained** with repository policies  
-✅ **Post-merge validation** confirms successful integration  
+✅ **Branch state validated** and working tree clean
+✅ **PR readiness confirmed** with approvals and CI/CD success
+✅ **Appropriate merge strategy** selected based on branch workflow
+✅ **Merge executed successfully** using GitHub CLI
+✅ **Branch cleanup completed** according to strategy
+✅ **Local git state synchronized** with remote changes
+✅ **Workflow compliance maintained** with repository policies
+✅ **Post-merge validation** confirms successful integration
 
 ## Important Notes
 

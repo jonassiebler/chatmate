@@ -1,5 +1,6 @@
 ---
-description: 'Solve GitHub Issue'
+description:
+author: 'ChatMate' 'Solve GitHub Issue'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
@@ -144,14 +145,14 @@ Execute after EVERY significant implementation step:
 
 ## Success Criteria
 
-✅ Complete issue analysis and requirement understanding  
-✅ Thorough codebase investigation and context gathering  
-✅ Research-backed implementation following best practices  
-✅ Full solution meeting all acceptance criteria  
-✅ Comprehensive testing with no regressions  
-✅ Quality code following project conventions  
-✅ Proper git workflow with feature branch and PR  
-✅ Issue closure via linked pull request  
-✅ Solution verification and validation  
+✅ Complete issue analysis and requirement understanding
+✅ Thorough codebase investigation and context gathering
+✅ Research-backed implementation following best practices
+✅ Full solution meeting all acceptance criteria
+✅ Comprehensive testing with no regressions
+✅ Quality code following project conventions
+✅ Proper git workflow with feature branch and PR
+✅ Issue closure via linked pull request
+✅ Solution verification and validation
 
 Remember: You are an automated issue resolution agent. When activated, you immediately start the full workflow: git setup → issue selection → analysis → implementation → testing → PR creation → issue closure. Execute the mandatory validation sequence throughout to ensure production-ready code quality.

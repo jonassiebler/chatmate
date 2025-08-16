@@ -1,15 +1,13 @@
 #!/bin/bash
 
 # ChatMate Testing Framework Runner
-# Comprehensive test execution script with reporting and coverage analysis
+# Comprehensive test execution script with Go testing and coverage analysis
 
 set -e
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-TEST_DIR="$SCRIPT_DIR/tests"
-BATS_LIBS_DIR="$TEST_DIR"
+PROJECT_ROOT="$SCRIPT_DIR"
 
 # Colors for output
 RED='\033[0;31m'
@@ -26,6 +24,8 @@ SKIPPED_TESTS=0
 
 # Logging
 LOG_FILE="$PROJECT_ROOT/test-results.log"
+COVERAGE_FILE="$PROJECT_ROOT/coverage.out"
+COVERAGE_HTML="$PROJECT_ROOT/coverage.html"
 
 # Helper functions
 log_info() {
@@ -56,315 +56,441 @@ setup_test_environment() {
     
     cd "$PROJECT_ROOT" || exit 1
     
-    # Ensure test directories exist
-    mkdir -p "$TEST_DIR"/{unit,integration,fixtures,helpers}
-    
     # Check for required tools
-    local missing_tools=()
-    
-    if ! command -v bats >/dev/null 2>&1; then
-        if [[ ! -x "$BATS_LIBS_DIR/bats-core/bin/bats" ]]; then
-            missing_tools+=("bats")
-        fi
+    if ! command -v go >/dev/null 2>&1; then
+        log_error "Go is not installed or not in PATH"
+        exit 1
     fi
     
-    if [[ ${#missing_tools[@]} -gt 0 ]]; then
-        log_warning "Missing tools: ${missing_tools[*]}"
-        log_info "Installing missing tools..."
-        install_test_dependencies
-    fi
+    # Verify Go version
+    local go_version
+    go_version=$(go version | awk '{print $3}' | sed 's/go//')
+    log_info "Using Go version: $go_version"
+    
+    # Install/update dependencies
+    log_info "Installing Go dependencies..."
+    go mod download
+    go mod tidy
     
     log_success "Test environment ready"
 }
 
-# Install test dependencies
-install_test_dependencies() {
-    log_info "Installing Bats testing framework..."
-    
-    # Install Bats Core
-    if [[ ! -d "$BATS_LIBS_DIR/bats-core" ]]; then
-        git clone https://github.com/bats-core/bats-core.git "$BATS_LIBS_DIR/bats-core"
-    fi
-    
-    # Install Bats Support
-    if [[ ! -d "$BATS_LIBS_DIR/bats-support" ]]; then
-        git clone https://github.com/bats-core/bats-support.git "$BATS_LIBS_DIR/bats-support"
-    fi
-    
-    # Install Bats Assert
-    if [[ ! -d "$BATS_LIBS_DIR/bats-assert" ]]; then
-        git clone https://github.com/bats-core/bats-assert.git "$BATS_LIBS_DIR/bats-assert"
-    fi
-    
-    log_success "Bats framework installed"
-}
-
-# Get Bats executable path
-get_bats_executable() {
-    if command -v bats >/dev/null 2>&1; then
-        echo "bats"
-    elif [[ -x "$BATS_LIBS_DIR/bats-core/bin/bats" ]]; then
-        echo "$BATS_LIBS_DIR/bats-core/bin/bats"
-    else
-        log_error "Bats executable not found"
-        exit 1
-    fi
-}
-
 # Run unit tests
 run_unit_tests() {
-    log_info "Running unit tests..."
+    log_info "Running Go unit tests..."
     
-    local bats_cmd
-    bats_cmd=$(get_bats_executable)
+    # Run tests with coverage
+    local test_output
+    test_output=$(go test -v -coverprofile="$COVERAGE_FILE" ./... 2>&1) || true
     
-    local test_files=("$TEST_DIR/unit"/*.bats)
+    echo "$test_output" | tee -a "$LOG_FILE"
     
-    if [[ ! -f "${test_files[0]}" ]]; then
-        log_warning "No unit test files found"
-        return 0
-    fi
+    # Parse results from test output
+    local unit_total unit_passed unit_failed unit_skipped
     
-    local unit_results
-    unit_results=$("$bats_cmd" --tap "${test_files[@]}" 2>&1) || true
+    # Count top-level test functions only (=== RUN TestFunctionName, not sub-tests)
+    unit_total=$(echo "$test_output" | grep -E "^=== RUN   Test[A-Z]" | grep -v "^=== RUN.*/" | wc -l | tr -d ' ')
+    unit_passed=$(echo "$test_output" | grep -E "^--- PASS: Test[A-Z]" | grep -v "^--- PASS:.*/" | wc -l | tr -d ' ')
+    unit_failed=$(echo "$test_output" | grep -E "^--- FAIL: Test[A-Z]" | grep -v "^--- FAIL:.*/" | wc -l | tr -d ' ')
+    unit_skipped=$(echo "$test_output" | grep -E "^--- SKIP: Test[A-Z]" | grep -v "^--- SKIP:.*/" | wc -l | tr -d ' ')
     
-    echo "$unit_results" | tee -a "$LOG_FILE"
-    
-    # Parse results
-    local unit_total unit_passed unit_failed
-    unit_total=$(echo "$unit_results" | grep -c "^ok\|^not ok" || echo "0")
-    unit_passed=$(echo "$unit_results" | grep -c "^ok" || echo "0")
-    unit_failed=$(echo "$unit_results" | grep -c "^not ok" || echo "0")
-    
-    # Ensure we have valid numbers
+    # Ensure we have valid numbers (fallback to 0 if empty)
     unit_total=${unit_total:-0}
     unit_passed=${unit_passed:-0}
     unit_failed=${unit_failed:-0}
+    unit_skipped=${unit_skipped:-0}
+    
+    # Convert empty strings to 0
+    [[ -z "$unit_total" ]] && unit_total=0
+    [[ -z "$unit_passed" ]] && unit_passed=0
+    [[ -z "$unit_failed" ]] && unit_failed=0
+    [[ -z "$unit_skipped" ]] && unit_skipped=0
     
     TOTAL_TESTS=$((TOTAL_TESTS + unit_total))
     PASSED_TESTS=$((PASSED_TESTS + unit_passed))
     FAILED_TESTS=$((FAILED_TESTS + unit_failed))
+    SKIPPED_TESTS=$((SKIPPED_TESTS + unit_skipped))
     
     if [[ $unit_failed -eq 0 ]]; then
         log_success "Unit tests completed: $unit_passed/$unit_total passed"
+        if [[ $unit_skipped -gt 0 ]]; then
+            log_warning "$unit_skipped tests were skipped"
+        fi
     else
         log_error "Unit tests failed: $unit_failed/$unit_total failed"
     fi
+    
+    return $unit_failed
 }
 
 # Run integration tests
 run_integration_tests() {
-    log_info "Running integration tests..."
+    log_info "Running Go integration tests..."
     
-    local bats_cmd
-    bats_cmd=$(get_bats_executable)
+    # Run integration tests with longer timeout
+    local integration_output
+    integration_output=$(go test -v -timeout=30m -tags=integration ./... 2>&1) || true
     
-    local test_files=("$TEST_DIR/integration"/*.bats)
+    echo "$integration_output" | tee -a "$LOG_FILE"
     
-    if [[ ! -f "${test_files[0]}" ]]; then
-        log_warning "No integration test files found"
-        return 0
+    # Parse results from integration test output
+    local integration_total integration_passed integration_failed integration_skipped
+    
+    # Count integration tests (look for test functions with Integration in name)
+    integration_total=$(echo "$integration_output" | grep -E "^=== RUN   .*Integration|^=== RUN   .*Test.*Suite" | wc -l | tr -d ' ')
+    integration_passed=$(echo "$integration_output" | grep -E "^--- PASS: .*Integration|^--- PASS: .*Test.*Suite" | wc -l | tr -d ' ')
+    integration_failed=$(echo "$integration_output" | grep -E "^--- FAIL: .*Integration|^--- FAIL: .*Test.*Suite" | wc -l | tr -d ' ')
+    integration_skipped=$(echo "$integration_output" | grep -E "^--- SKIP: .*Integration|^--- SKIP: .*Test.*Suite" | wc -l | tr -d ' ')
+    
+    # Ensure we have valid numbers (fallback to 0 if empty)
+    integration_total=${integration_total:-0}
+    integration_passed=${integration_passed:-0}
+    integration_failed=${integration_failed:-0}
+    integration_skipped=${integration_skipped:-0}
+    
+    # Convert empty strings to 0
+    [[ -z "$integration_total" ]] && integration_total=0
+    [[ -z "$integration_passed" ]] && integration_passed=0
+    [[ -z "$integration_failed" ]] && integration_failed=0
+    [[ -z "$integration_skipped" ]] && integration_skipped=0
+    
+    TOTAL_TESTS=$((TOTAL_TESTS + integration_total))
+    PASSED_TESTS=$((PASSED_TESTS + integration_passed))
+    FAILED_TESTS=$((FAILED_TESTS + integration_failed))
+    SKIPPED_TESTS=$((SKIPPED_TESTS + integration_skipped))
+    
+    if [[ $integration_failed -eq 0 ]]; then
+        log_success "Integration tests completed: $integration_passed/$integration_total passed"
+        if [[ $integration_skipped -gt 0 ]]; then
+            log_warning "$integration_skipped integration tests were skipped"
+        fi
+    else
+        log_error "Integration tests failed: $integration_failed/$integration_total failed"
     fi
     
-    local integration_results
-    integration_results=$("$bats_cmd" --tap "${test_files[@]}" 2>&1) || true
+    return $integration_failed
+}
+
+# Run benchmark tests
+run_benchmark_tests() {
+    log_info "Running Go benchmark tests..."
     
-    echo "$integration_results" | tee -a "$LOG_FILE"
+    local benchmark_output
+    benchmark_output=$(go test -bench=. -benchmem ./... 2>&1) || true
     
-    # Parse results
-    local int_total int_passed int_failed
-    int_total=$(echo "$integration_results" | grep -c "^ok\|^not ok" || echo "0")
-    int_passed=$(echo "$integration_results" | grep -c "^ok" || echo "0")
-    int_failed=$(echo "$integration_results" | grep -c "^not ok" || echo "0")
+    echo "$benchmark_output" | tee -a "$LOG_FILE"
     
-    # Ensure we have valid numbers
-    int_total=${int_total:-0}
-    int_passed=${int_passed:-0}
-    int_failed=${int_failed:-0}
+    local benchmark_count
+    benchmark_count=$(echo "$benchmark_output" | grep -c "^Benchmark" || echo "0")
     
-    TOTAL_TESTS=$((TOTAL_TESTS + int_total))
-    PASSED_TESTS=$((PASSED_TESTS + int_passed))
-    FAILED_TESTS=$((FAILED_TESTS + int_failed))
-    
-    if [[ $int_failed -eq 0 ]]; then
-        log_success "Integration tests completed: $int_passed/$int_total passed"
+    if [[ $benchmark_count -gt 0 ]]; then
+        log_success "Benchmark tests completed: $benchmark_count benchmarks run"
     else
-        log_error "Integration tests failed: $int_failed/$int_total failed"
+        log_info "No benchmark tests found"
     fi
 }
 
-# Run markdown linting
-run_markdown_tests() {
-    log_info "Running markdown quality tests..."
-    
-    if command -v markdownlint >/dev/null 2>&1; then
-        local lint_config="$PROJECT_ROOT/.markdownlint.json"
+# Generate coverage report
+generate_coverage_report() {
+    if [[ -f "$COVERAGE_FILE" ]]; then
+        log_info "Generating coverage report..."
         
-        # Create markdownlint config if it doesn't exist
-        if [[ ! -f "$lint_config" ]]; then
-            cat > "$lint_config" << 'EOF'
-{
-  "MD013": false,
-  "MD041": false,
-  "MD033": false,
-  "MD034": false,
-  "MD032": false
-}
-EOF
-        fi
+        # Generate HTML coverage report
+        go tool cover -html="$COVERAGE_FILE" -o "$COVERAGE_HTML"
         
-        if markdownlint "**/*.md" --config "$lint_config" >> "$LOG_FILE" 2>&1; then
-            log_success "Markdown linting passed"
+        # Get coverage percentage
+        local coverage_percent
+        coverage_percent=$(go tool cover -func="$COVERAGE_FILE" | tail -1 | awk '{print $3}')
+        
+        log_info "Code coverage: $coverage_percent"
+        log_success "Coverage report saved to: $COVERAGE_HTML"
+        
+        # Parse coverage percentage for threshold check
+        local coverage_num
+        coverage_num=$(echo "$coverage_percent" | sed 's/%//')
+        
+        if (( $(echo "$coverage_num >= 80" | bc -l) )); then
+            log_success "Coverage meets threshold (>= 80%)"
+        elif (( $(echo "$coverage_num >= 60" | bc -l) )); then
+            log_warning "Coverage is moderate ($coverage_percent), consider improving"
         else
-            log_warning "Markdown linting found issues (see log for details)"
+            log_warning "Coverage is low ($coverage_percent), improvement recommended"
         fi
     else
-        log_warning "markdownlint not available, skipping markdown tests"
+        log_warning "No coverage data available"
     fi
 }
 
-# Run shellcheck if available
-run_shell_tests() {
-    log_info "Running shell script quality tests..."
+# Run security checks
+run_security_checks() {
+    log_info "Running security checks..."
     
-    if command -v shellcheck >/dev/null 2>&1; then
-        local shell_files=("hire.sh")
-        
-        for file in "${shell_files[@]}"; do
-            if [[ -f "$file" ]]; then
-                if shellcheck "$file" >> "$LOG_FILE" 2>&1; then
-                    log_success "Shell check passed for $file"
-                else
-                    log_warning "Shell check found issues in $file"
-                fi
-            fi
-        done
+    # Check for common security issues
+    local security_issues=0
+    
+    # Check for hardcoded credentials/secrets
+    if grep -r -i "password\|secret\|key\|token" --include="*.go" . >/dev/null 2>&1; then
+        log_warning "Potential hardcoded credentials found - review manually"
+        ((security_issues++))
+    fi
+    
+    # Check for unsafe operations
+    if grep -r "unsafe\." --include="*.go" . >/dev/null 2>&1; then
+        log_warning "Unsafe operations found - review manually"
+        ((security_issues++))
+    fi
+    
+    # Check for SQL injection patterns (basic check)
+    if grep -r "fmt\.Sprintf.*%s.*sql\|fmt\.Sprintf.*%v.*sql" --include="*.go" . >/dev/null 2>&1; then
+        log_warning "Potential SQL injection patterns found - review manually"
+        ((security_issues++))
+    fi
+    
+    if [[ $security_issues -eq 0 ]]; then
+        log_success "Security checks passed"
     else
-        log_warning "shellcheck not available, skipping shell script tests"
+        log_warning "Found $security_issues potential security issues"
     fi
 }
 
-# Generate test report
-generate_report() {
-    log_info "Generating test report..."
+# Run code quality checks
+run_quality_checks() {
+    log_info "Running code quality checks..."
     
-    echo "" | tee -a "$LOG_FILE"
+    # Go vet
+    log_info "Running go vet..."
+    if go vet ./...; then
+        log_success "go vet passed"
+    else
+        log_error "go vet found issues"
+        return 1
+    fi
+    
+    # Go fmt check
+    log_info "Checking go fmt..."
+    local fmt_issues
+    fmt_issues=$(gofmt -l . | grep -v vendor | grep -v .git || true)
+    
+    if [[ -z "$fmt_issues" ]]; then
+        log_success "go fmt check passed"
+    else
+        log_warning "go fmt issues found in: $fmt_issues"
+    fi
+    
+    # Check for gosec if available
+    if command -v gosec >/dev/null 2>&1; then
+        log_info "Running gosec security analyzer..."
+        if gosec ./...; then
+            log_success "gosec security check passed"
+        else
+            log_warning "gosec found potential security issues"
+        fi
+    else
+        log_info "gosec not available - skipping advanced security analysis"
+    fi
+}
+
+# Print test summary
+print_summary() {
+    echo ""
     echo "======================================" | tee -a "$LOG_FILE"
-    echo "ChatMate Test Results Summary" | tee -a "$LOG_FILE"
+    echo "TEST SUMMARY" | tee -a "$LOG_FILE"
     echo "======================================" | tee -a "$LOG_FILE"
-    echo "Total Tests: $TOTAL_TESTS" | tee -a "$LOG_FILE"
-    echo "Passed: $PASSED_TESTS" | tee -a "$LOG_FILE"
-    echo "Failed: $FAILED_TESTS" | tee -a "$LOG_FILE"
-    echo "Skipped: $SKIPPED_TESTS" | tee -a "$LOG_FILE"
+    
+    log_info "Total tests run: $TOTAL_TESTS"
+    log_success "Tests passed: $PASSED_TESTS"
+    
+    if [[ $FAILED_TESTS -gt 0 ]]; then
+        log_error "Tests failed: $FAILED_TESTS"
+    fi
+    
+    if [[ $SKIPPED_TESTS -gt 0 ]]; then
+        log_warning "Tests skipped: $SKIPPED_TESTS"
+    fi
     
     local success_rate
     if [[ $TOTAL_TESTS -gt 0 ]]; then
-        success_rate=$((PASSED_TESTS * 100 / TOTAL_TESTS))
-        echo "Success Rate: ${success_rate}%" | tee -a "$LOG_FILE"
+        # Use bc for accurate arithmetic to avoid bash integer overflow
+        success_rate=$(echo "scale=1; $PASSED_TESTS * 100 / $TOTAL_TESTS" | bc 2>/dev/null || echo "0")
+        # Round to nearest integer
+        success_rate=$(printf "%.0f" "$success_rate" 2>/dev/null || echo "0")
+        log_info "Success rate: ${success_rate}%"
+    else
+        log_info "Success rate: N/A (no tests run)"
     fi
     
-    echo "Log File: $LOG_FILE" | tee -a "$LOG_FILE"
-    echo "Timestamp: $(date)" | tee -a "$LOG_FILE"
     echo "======================================" | tee -a "$LOG_FILE"
     
     if [[ $FAILED_TESTS -eq 0 ]]; then
-        log_success "All tests passed! 🎉"
+        log_success "ALL TESTS PASSED!"
         return 0
     else
-        log_error "Some tests failed. Check the log for details."
+        log_error "SOME TESTS FAILED!"
         return 1
     fi
 }
 
-# Cleanup test environment
+# Show usage information
+show_usage() {
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  -u, --unit           Run only unit tests"
+    echo "  -i, --integration    Run only integration tests"
+    echo "  -b, --benchmark      Run benchmark tests"
+    echo "  -c, --coverage       Generate coverage report only"
+    echo "  -q, --quality        Run quality checks only"
+    echo "  -s, --security       Run security checks only"
+    echo "  -a, --all            Run all tests (default)"
+    echo "  -h, --help           Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0                   # Run all tests"
+    echo "  $0 --unit           # Run only unit tests"
+    echo "  $0 --integration    # Run only integration tests"
+    echo "  $0 --coverage       # Generate coverage report"
+}
+
+# Clean up function
 cleanup() {
-    log_info "Cleaning up test environment..."
-    
-    # Remove temporary files if any
-    find /tmp -name "chatmate-test-*" -type d -exec rm -rf {} + 2>/dev/null || true
-    
-    log_success "Cleanup completed"
+    log_info "Cleaning up temporary files..."
+    # Add cleanup logic here if needed
 }
 
 # Main execution
 main() {
     local run_unit=true
     local run_integration=true
-    local run_quality=true
-    local verbose=false
+    local run_benchmark=false
+    local run_coverage=true
+    local run_quality=false
+    local run_security=false
     
     # Parse command line arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --unit-only)
+            -u|--unit)
+                run_unit=true
                 run_integration=false
+                run_benchmark=false
+                run_coverage=false
                 run_quality=false
+                run_security=false
                 shift
                 ;;
-            --integration-only)
+            -i|--integration)
                 run_unit=false
+                run_integration=true
+                run_benchmark=false
+                run_coverage=false
                 run_quality=false
+                run_security=false
                 shift
                 ;;
-            --quality-only)
+            -b|--benchmark)
                 run_unit=false
                 run_integration=false
+                run_benchmark=true
+                run_coverage=false
+                run_quality=false
+                run_security=false
                 shift
                 ;;
-            --verbose|-v)
-                verbose=true
+            -c|--coverage)
+                run_unit=false
+                run_integration=false
+                run_benchmark=false
+                run_coverage=true
+                run_quality=false
+                run_security=false
                 shift
                 ;;
-            --help|-h)
-                echo "Usage: $0 [OPTIONS]"
-                echo "Options:"
-                echo "  --unit-only        Run only unit tests"
-                echo "  --integration-only Run only integration tests"
-                echo "  --quality-only     Run only quality tests"
-                echo "  --verbose, -v      Verbose output"
-                echo "  --help, -h         Show this help"
+            -q|--quality)
+                run_unit=false
+                run_integration=false
+                run_benchmark=false
+                run_coverage=false
+                run_quality=true
+                run_security=false
+                shift
+                ;;
+            -s|--security)
+                run_unit=false
+                run_integration=false
+                run_benchmark=false
+                run_coverage=false
+                run_quality=false
+                run_security=true
+                shift
+                ;;
+            -a|--all)
+                run_unit=true
+                run_integration=true
+                run_benchmark=true
+                run_coverage=true
+                run_quality=true
+                run_security=true
+                shift
+                ;;
+            -h|--help)
+                show_usage
                 exit 0
                 ;;
             *)
                 log_error "Unknown option: $1"
+                show_usage
                 exit 1
                 ;;
         esac
     done
     
+    # Set up signal handlers for cleanup
+    trap cleanup EXIT
+    
     # Initialize
     init_logging
-    log_info "Starting ChatMate test suite..."
-    
-    # Setup
     setup_test_environment
     
+    local exit_code=0
+    
     # Run tests based on options
-    if [[ "$run_unit" == true ]]; then
-        run_unit_tests
+    if [[ "$run_quality" == "true" ]]; then
+        if ! run_quality_checks; then
+            exit_code=1
+        fi
     fi
     
-    if [[ "$run_integration" == true ]]; then
-        run_integration_tests
+    if [[ "$run_security" == "true" ]]; then
+        run_security_checks
     fi
     
-    if [[ "$run_quality" == true ]]; then
-        run_markdown_tests
-        run_shell_tests
+    if [[ "$run_unit" == "true" ]]; then
+        if ! run_unit_tests; then
+            exit_code=1
+        fi
     fi
     
-    # Generate report and cleanup
-    if generate_report; then
-        cleanup
-        exit 0
-    else
-        cleanup
-        exit 1
+    if [[ "$run_integration" == "true" ]]; then
+        if ! run_integration_tests; then
+            exit_code=1
+        fi
     fi
+    
+    if [[ "$run_benchmark" == "true" ]]; then
+        run_benchmark_tests
+    fi
+    
+    if [[ "$run_coverage" == "true" ]]; then
+        generate_coverage_report
+    fi
+    
+    # Print summary
+    if ! print_summary; then
+        exit_code=1
+    fi
+    
+    exit $exit_code
 }
 
-# Handle script interruption
-trap cleanup EXIT
-
-# Run main function with all arguments
+# Run main function
 main "$@"

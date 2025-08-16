@@ -6,38 +6,39 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+env:
+  GO_VERSION: '1.25.0'
+
 jobs:
   test-framework:
     runs-on: ${{ matrix.os }}
     name: Test Framework - ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
       with:
-        node-version: '20'
+        go-version: ${{ env.GO_VERSION }}
         
-    - name: Install Node.js dependencies
-      run: |
-        if [ -f "package.json" ]; then
-          npm install
-        fi
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
         
-    - name: Install Bats testing framework
-      run: |
-        # Install Bats core
-        git clone https://github.com/bats-core/bats-core.git tests/bats-core
-        git clone https://github.com/bats-core/bats-support.git tests/bats-support
-        git clone https://github.com/bats-core/bats-assert.git tests/bats-assert
-        
-        # Add bats to PATH
-        echo "$GITHUB_WORKSPACE/tests/bats-core/bin" >> $GITHUB_PATH
+    - name: Download dependencies
+      run: go mod download
+      
+    - name: Verify dependencies
+      run: go mod verify
         
     - name: Run comprehensive test suite
       run: |
@@ -206,7 +207,7 @@ jobs:
         shellcheck run-tests.sh
         
         # Check any other shell scripts
-        find . -name "*.sh" -not -path "./tests/bats-*" -exec shellcheck {} \;
+        find . -name "*.sh" -not -path "./test/*" -exec shellcheck {} \;
         
         echo "✅ Shell script quality check completed"
 
