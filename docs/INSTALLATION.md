@@ -11,39 +11,32 @@ Before installing ChatMate, ensure you have:
 - ✅ **Active GitHub Copilot subscription**
 - ✅ **Write permissions** to your VS Code user directory
 
+
 ## Quick Installation (Recommended)
 
-### 1. Get ChatMate CLI
-
-#### Option A: Download Release Binary
+### 1. Install via Homebrew Tap (Easiest)
 
 ```bash
-# Download the latest release for your platform
-# Extract and move to your PATH
+# Add the ChatMate tap
+brew tap jonassiebler/chatmate
+
+# Install the CLI
+brew install chatmate
+
+# (Optional) Update to latest version
+brew upgrade chatmate
+
+# Install all chatmates
+chatmate hire
 ```
 
-#### Option B: Build from Source
-
-```bash
-git clone https://github.com/jonassiebler/chatmate.git
-cd chatmate
-go build -o chatmate .
-```
-
-### 2. Install All Chatmates
-
-```bash
-# Install all available chatmates (recommended for new users)
-./chatmate hire
-```
-
-### 3. Restart VS Code
+### 2. Restart VS Code
 
 - Close all VS Code windows
 - Reopen VS Code
 - Open Copilot Chat (`Ctrl/Cmd+Shift+P` → "Chat: Open Chat")
 
-### 4. Test Installation
+### 3. Test Installation
 
 In VS Code Copilot Chat, try:
 ```
@@ -51,6 +44,29 @@ In VS Code Copilot Chat, try:
 ```
 
 If you see a response from the Solve Issue chatmate, you're all set! 🎉
+
+---
+
+### Manual Installation (Alternative)
+
+```bash
+# Download the latest release for your platform
+# Extract and move to your PATH
+```
+
+Or build from source:
+
+```bash
+git clone https://github.com/jonassiebler/chatmate.git
+cd chatmate
+go build -o chatmate .
+```
+
+Install all chatmates:
+
+```bash
+./chatmate hire
+```
 
 ## Alternative Installation Methods
 
