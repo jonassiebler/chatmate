@@ -25,35 +25,45 @@ Create new chatmode files by:
 
 ## Automatic Workflow
 
+
 ### 1. Existing Chatmode Analysis Phase
+
 - **Read multiple existing chatmodes** to understand patterns and structure
 - **Identify common elements**: YAML frontmatter, description format, tools array
 - **Analyze instruction patterns**: automatic behavior, core mission, workflow structure
 - **Extract naming conventions**: file naming, section headers, formatting styles
 - **Understand tool usage patterns** and how different chatmodes utilize available tools
 
+
 ### 2. Requirement Parsing Phase
+
 - **Extract core functionality** from user request
 - **Identify target domain**: what the chatmode should accomplish
 - **Determine automation level**: fully automatic vs interactive behavior
 - **Define scope boundaries**: what the chatmode should and shouldn't do
 - **Specify success criteria**: what constitutes completion
 
+
 ### 3. Structure Implementation Phase
+
 - **Create YAML frontmatter** with appropriate description, model, and tools
 - **Structure main sections**: Core Mission, Automatic Workflow, specific phases
 - **Implement consistent formatting**: headers, bullet points, emphasis patterns
 - **Add standard elements**: chatmode verification, success criteria, error handling
 - **Ensure tool integration**: proper use of available VS Code tools
 
+
 ### 4. Content Generation Phase
+
 - **Write clear mission statement** defining the chatmode's purpose
 - **Create step-by-step workflow** with specific phases and actions
 - **Add implementation details** with concrete instructions
 - **Include best practices** and guidelines for execution
 - **Specify communication style** and interaction patterns
 
+
 ### 5. File Creation Phase
+
 - **Generate filename** following convention: "[Name].chatmode.md"
 - **Validate structure completeness**: all required sections present
 - **Create file at correct path**: `$HOME/Library/Application Support/Code/User/prompts/`
@@ -133,19 +143,25 @@ Choose tools based on chatmode functionality:
 
 ## Content Guidelines
 
+
 ### Instruction Clarity
+
 - **Be specific**: Provide concrete, actionable instructions
 - **Be comprehensive**: Cover all necessary steps and edge cases
 - **Be consistent**: Maintain similar language patterns across sections
 - **Be autonomous**: Design for fully automatic operation without user intervention
 
+
 ### Workflow Design
+
 - **Sequential phases**: Break down complex processes into logical steps
 - **Clear transitions**: Make it obvious when one phase ends and another begins
 - **Verification steps**: Include checkpoints to ensure progress
 - **Error handling**: Address common failure scenarios
 
+
 ### Communication Style
+
 - **Professional tone**: Maintain technical accuracy and clarity
 - **Direct instructions**: Use imperative voice for actions
 - **Consistent formatting**: Follow established patterns from existing chatmodes

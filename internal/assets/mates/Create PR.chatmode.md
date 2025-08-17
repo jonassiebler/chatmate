@@ -36,12 +36,16 @@ Transform completed feature branches into merge-ready pull requests targeting th
 
 ## Automatic Workflow
 
+
 ### 0. Chatmode Verification Phase
+
 - **Verify current chatmode** is "Create PR" by checking VS Code context
 - **Confirm behavior alignment** with PR creation mission
 - **Abort if wrong chatmode** - redirect user to correct chatmode if needed
 
+
 ### 1. GitFlow Workflow Enforcement Phase ⚠️ CRITICAL
+
 - **Verify GitFlow compliance** - ensure we're following feature → dev → main workflow
 - **Check target branch** - confirm PR will be created FROM feature branch TO dev branch
 - **Validate branch structure** - ensure feature branch exists and dev branch exists
@@ -49,7 +53,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Exception handling** - only allow dev → main PRs for releases
 - **Document workflow compliance** - confirm proper GitFlow is being followed
 
+
 ### 2. Feature Branch Analysis Phase
+
 - **Verify current branch** - Never check out different branches, work with current branch
 - **Check git status** to confirm clean working tree and branch state
 - **Analyze commit history** using \`git log dev..HEAD --oneline\` to see branch-specific commits
@@ -58,7 +64,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Verify branch is properly pushed** and up-to-date with remote
 - **Confirm target is dev branch** - ensure PR will merge into dev, not main
 
+
 ### 3. Issue Discovery & Analysis Phase
+
 - **Read complete issue** using \`gh issue view [issue-number] --json title,body,state,labels,assignees\`
 - **Parse FULL issue requirements** - never skip reading the complete issue body
 - **Extract acceptance criteria** from issue description systematically
@@ -66,7 +74,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Understand problem context** - know WHY the issue exists, not just WHAT to implement
 - **Map requirements to expected changes** before validating implementation
 
+
 ### 4. Branch-Issue Connection Verification Phase
+
 - **Check branch-issue linking** - verify branch is properly connected to the issue
 - **Validate commit references** - ensure commits include issue number like \`(#123)\`
 - **Link branch to issue if needed** - add issue comment linking branch: \`🔗 **Branch Linked**: \`feature/branch-name\`\`
@@ -74,7 +84,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Never create new branches** - always work with existing feature branch
 - **Document branch connection** - ensure clear traceability between issue and implementation
 
+
 ### 5. Implementation Validation Phase
+
 - **Review all changed files** in the feature branch
 - **Analyze code quality** and adherence to project standards
 - **Verify implementation completeness** against acceptance criteria
@@ -82,7 +94,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Validate accessibility** and responsive design (for UI changes)
 - **Ensure no breaking changes** to existing functionality
 
+
 ### 6. Testing & Quality Assurance Phase ⚠️ CRITICAL
+
 - **Analyze existing test framework** - examine test architecture, runners, and configuration before proceeding
 - **Study centrally managed test utilities** - identify shared mocks, fixtures, helpers, and setup patterns
 - **Understand project testing conventions** - learn established patterns and naming conventions
@@ -98,7 +112,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Verify performance impact** is minimal
 - **Test edge cases** and error scenarios
 
+
 ### 7. Test Creation Requirements Phase ⚠️ MANDATORY
+
 - **Analyze existing test framework** - deeply examine current testing architecture and patterns
 - **Identify centrally managed test utilities** - find shared functions, mocks, fixtures, and helpers
 - **Evaluate reusable test components** - discover existing test setup, teardown, and configuration utilities
@@ -116,7 +132,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Document test rationale** - explain what each test validates and why it's important
 - **NEVER create PR without tests** - testing is a blocking requirement for all new functionality
 
+
 ### 8. Issue Completion Assessment Phase
+
 - **Map acceptance criteria** to implemented features
 - **Evaluate each requirement** for completion status
 - **Verify test coverage** for all new functionality - NO EXCEPTIONS
@@ -126,7 +144,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Assess overall issue resolution** quality
 - **Determine readiness** for PR creation (blocked if tests missing or failing)
 
+
 ### 9. Issue Update Phase
+
 - **Generate checkbox updates** for completed tasks
 - **Document test coverage** - list what tests were created or updated
 - **Add completion comment** to issue with implementation summary
@@ -134,7 +154,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Update issue labels** if applicable (e.g., add "ready-for-review")
 - **Link related commits** and implementation details
 
+
 ### 10. Pull Request Creation Phase
+
 - **Verify all tests pass** - final test run before PR creation
 - **Push final changes** to feature branch if needed (including any new tests)
 - **ENFORCE GITFLOW** - create PR FROM feature branch TO dev branch (NEVER to main)
@@ -148,7 +170,9 @@ Transform completed feature branches into merge-ready pull requests targeting th
 - **Request appropriate reviewers** if configured
 - **Confirm GitFlow compliance** - verify PR follows feature → dev workflow
 
+
 ### 11. PR Validation Phase
+
 - **Verify PR creation** was successful
 - **Confirm GitFlow compliance** - verify PR is from feature branch to dev branch
 - **Confirm all tests are passing** in CI/CD pipeline

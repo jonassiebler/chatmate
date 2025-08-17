@@ -13,6 +13,7 @@ Open source collection of specialized AI agents for VS Code Copilot Chat. Each c
 
 ### Install the CLI Tool
 
+
 ```bash
 # Download or build the chatmate CLI
 # Then install all chatmates
@@ -22,6 +23,7 @@ chatmate hire
 **That's it!** Restart VS Code and start using your new chatmates with `@ChatmateName` in Copilot Chat.
 
 ### Verify Installation
+
 
 ```bash
 chatmate status    # Check installation health
@@ -45,6 +47,7 @@ Chatmates are specialized AI agents that bring focused expertise to your VS Code
 ## 📋 Command Reference
 
 ### Essential Commands
+
 
 ```bash
 # Install all chatmates (recommended)
@@ -74,6 +77,7 @@ chatmate hire --help
 ```
 
 ### Example Workflows
+
 
 ```bash
 # First-time setup
@@ -111,6 +115,7 @@ chatmate uninstall "Rarely Used"  # Clean up
 
 Build and install the ChatMate CLI tool:
 
+
 ```bash
 # Clone the repository
 git clone https://github.com/jonassiebler/chatmate.git
@@ -126,6 +131,7 @@ go build -o chatmate .
 ### Legacy Script Installation
 
 For users who prefer the original method:
+
 
 ```bash
 git clone https://github.com/jonassiebler/chatmate.git
@@ -143,6 +149,7 @@ Install specific chatmates manually:
    - **Windows:** `%APPDATA%/Code/User/prompts`
 
 2. **Copy chatmate files:**
+
    ```bash
    cp mates/"Solve Issue.chatmode.md" "/path/to/prompts/"
    ```
@@ -157,6 +164,7 @@ Install specific chatmates manually:
 
 ### Getting Help
 
+
 ```bash
 # Diagnostic commands
 chatmate status    # System health check
@@ -169,6 +177,7 @@ For detailed troubleshooting, see the [User Guide](docs/USER_GUIDE.md#troublesho
 ## 🧪 Development & Testing
 
 ChatMate uses Go's native testing framework with Testify for comprehensive test coverage:
+
 
 ```bash
 # Run all tests with coverage
@@ -198,7 +207,9 @@ go test -cover ./...               # Run with coverage
 go test -bench=. ./...             # Run benchmarks
 ```
 
+
 ### Test Structure
+
 - **Unit Tests**: Located alongside source code as `*_test.go` files
 - **Integration Tests**: End-to-end functionality testing
 - **Test Helpers**: `internal/testing/helpers/` - shared testing utilities
@@ -236,7 +247,8 @@ ChatMate maintains high quality through:
 
 ## 🏗 Repository Structure
 
-```
+
+```text
 chatmate/
 ├── cmd/                # CLI commands and interfaces
 ├── internal/           # Core application logic
@@ -287,6 +299,7 @@ MIT License - Feel free to use these chatmates in your own projects!
 ---
 
 **Ready to supercharge your VS Code experience?** 🚀
+
 
 ```bash
 chatmate hire

@@ -39,20 +39,28 @@ go test -run TestHire ./...    # All tests matching "TestHire"
 
 The project follows Go's standard testing conventions with a clean separation:
 
+
 ### Unit Tests (Package Level)
+
 - **`cmd/*_test.go`** - CLI command unit tests (structure, flags, validation)
 - **`internal/manager/*_test.go`** - Manager business logic tests
 - **`pkg/security/*_test.go`** - Security validation tests (96.4% coverage)
 - **`pkg/utils/*_test.go`** - Utility function tests
 
+
 ### Integration Tests
+
 - **`test/integration/`** - End-to-end CLI behavior and workflows
 - **`test/chatmate_validation_test.go`** - Project structure validation
 
+
 ### Performance Tests
+
 - **`test/benchmarks/`** - Performance benchmarks and optimization tests
 
+
 ### Test Helpers
+
 - **`internal/testing/helpers/`** - Shared test utilities and environment setup
 
 ## Go-Only Approach

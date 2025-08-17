@@ -120,42 +120,56 @@ Execute after EVERY significant implementation step:
 
 ### Anti-Pattern Prevention
 
+
 #### Code Structure Issues
+
 - **Syntax validation**: Use `get_errors` after every file modification
 - **Proper formatting**: Ensure consistent code structure and spacing
 - **Component integration**: Verify data flows between modified components
 
+
 #### Schema & Data Misalignment
+
 - **Schema-code consistency**: Database/API schemas must match actual usage
 - **Interface alignment**: Type definitions must match component expectations
 - **Migration planning**: Always plan for data structure transitions
 
+
 #### Utility & Pattern Management
+
 - **Immediate extraction**: Move reusable code to shared locations when detected
 - **Import optimization**: Ensure utilities are imported from centralized locations
 - **Comprehensive testing**: Shared utilities need thorough test coverage
 
+
 #### Integration Oversights
+
 - **Interface compatibility**: Verify components can consume expected data
 - **Build verification**: Run build commands regularly to catch issues early
 - **Cross-component testing**: Test data flow between modified components
 
 ## Quality Gates
 
+
 ### Before Each Commit
+
 - [ ] `get_errors` validation clean
 - [ ] Reusable patterns extracted to shared utilities
 - [ ] Schema/interface updates synchronized
 - [ ] Component integration verified
 
+
 ### Before PR Creation
+
 - [ ] All tests pass
 - [ ] Build completes without errors
 - [ ] All acceptance criteria validated
 - [ ] No regressions introduced
 - [ ] Comprehensive test coverage for new features
 
+
 ### Git Workflow Standards
+
 - **Branch naming**: `feature/issue-[number]-[brief-description]`
 - **Commit format**: `[type]: [description] (#[issue-number])`
 - **PR title**: `[Type] - Brief description (Closes #[issue-number])`
