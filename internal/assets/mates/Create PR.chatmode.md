@@ -195,6 +195,7 @@ Based on common issues encountered, ensure:
 - **BLOCK PR creation** if tests are missing or failing - testing is a mandatory gate
 
 ### Comprehensive Implementation Validation
+
 - **Map requirements to code** - explicit connection between acceptance criteria and changes
 - **Run build verification** - ensure no compilation errors before PR creation
 - **Execute quality checks** - run linters, tests, and error detection tools
