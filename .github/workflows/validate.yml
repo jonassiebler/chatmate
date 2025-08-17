@@ -21,7 +21,7 @@ jobs:
         
         # Check required directories
         required_dirs=(
-          "mates"
+          "internal/assets/mates"
           ".github"
           ".github/workflows"
           ".github/ISSUE_TEMPLATE"
@@ -68,24 +68,24 @@ jobs:
         echo "🤖 Validating chatmate files..."
         
         # Check if mates directory exists and has content
-        if [ ! -d "mates" ]; then
-          echo "❌ mates directory not found"
+        if [ ! -d "internal/assets/mates" ]; then
+          echo "❌ internal/assets/mates directory not found"
           exit 1
         fi
         
         # Count chatmate files
-        chatmate_count=$(find mates -name "*.chatmode.md" | wc -l)
+        chatmate_count=$(find internal/assets/mates -name "*.chatmode.md" | wc -l)
         echo "📊 Found $chatmate_count chatmate files"
         
         if [ $chatmate_count -eq 0 ]; then
-          echo "❌ No chatmate files found in mates directory"
+          echo "❌ No chatmate files found in internal/assets/mates directory"
           exit 1
         fi
         
         # Validate each chatmate file
         error_count=0
         
-        for file in mates/*.chatmode.md; do
+        for file in internal/assets/mates/*.chatmode.md; do
           if [ -f "$file" ]; then
             echo "🔍 Validating: $(basename "$file")"
             
@@ -111,7 +111,7 @@ jobs:
             # Check file size (should be reasonable for a prompt)
             file_size=$(wc -c < "$file")
             if [ $file_size -gt 50000 ]; then
-              echo "⚠️ Warning: Large file size for $(basename "$file"): $file_size bytes"
+              echo "⚠️ Warning: Large file size for $(basename "$file") : $file_size bytes"
             fi
             
             echo "✅ $(basename "$file") passed validation"
@@ -151,17 +151,17 @@ jobs:
         echo "🔍 Testing script logic..."
         
         # Verify mates directory exists
-        if [ ! -d "mates" ]; then
-          echo "❌ mates directory not found"
+        if [ ! -d "internal/assets/mates" ]; then
+          echo "❌ internal/assets/mates directory not found"
           exit 1
         fi
         
         # Count files to be copied
-        file_count=$(find mates -name "*.md" | wc -l)
+        file_count=$(find internal/assets/mates -name "*.md" | wc -l)
         echo "📁 Found $file_count markdown files to install"
         
         if [ $file_count -eq 0 ]; then
-          echo "❌ No markdown files found in mates directory"
+          echo "❌ No markdown files found in internal/assets/mates directory"
           exit 1
         fi
         
@@ -230,16 +230,16 @@ jobs:
         error_count=0
         
         for pattern in "${sensitive_patterns[@]}"; do
-          if grep -ri "$pattern" mates/ --exclude-dir=.git; then
+          if grep -ri "$pattern" internal/assets/mates/ --exclude-dir=.git; then
             echo "⚠️ Found potential sensitive data: $pattern"
             ((error_count++))
           fi
         done
         
         # Check for executable files in mates directory
-        if find mates/ -type f -executable | grep -q .; then
-          echo "⚠️ Found executable files in mates directory"
-          find mates/ -type f -executable
+        if find internal/assets/mates/ -type f -executable | grep -q .; then
+          echo "⚠️ Found executable files in internal/assets/mates directory"
+          find internal/assets/mates/ -type f -executable
           ((error_count++))
         fi
         
