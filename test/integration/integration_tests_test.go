@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	"github.com/jonassiebler/chatmate/internal/assets"
 	"github.com/jonassiebler/chatmate/internal/testing/helpers"
 )
 
@@ -56,28 +57,23 @@ func (s *IntegrationTestSuite) TestFullInstallationWorkflowMacOS() {
 	s.env.SimulateOS(s.T(), "macos")
 	promptsDir := s.env.SetupMockVSCode(s.T(), "macos")
 
-	// Verify mates directory exists
-	_, err := os.Stat("../../mates")
-	s.Require().NoError(err, "mates directory should exist")
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	s.Require().NoError(err, "Should be able to get embedded chatmate list")
+	s.Assert().Greater(len(chatmates), 0, "Should have embedded chatmate files")
 
-	// Count available chatmates
-	chatmateCount, err := helpers.CountFiles("../../mates", "*.chatmode.md")
-	s.Require().NoError(err)
-	s.Assert().Greater(chatmateCount, 0, "Should have chatmate files")
+	// Copy embedded chatmates to prompts directory
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		s.Require().NoError(err, "Should be able to read embedded file %s", filename)
 
-	// Find all chatmode files
-	chatmodeFiles, err := filepath.Glob("../../mates/*.chatmode.md")
-	s.Require().NoError(err)
-
-	for _, file := range chatmodeFiles {
-		destFile := filepath.Join(promptsDir, filepath.Base(file))
-		copyCmd := exec.Command("cp", file, destFile)
-		err := copyCmd.Run()
-		s.Require().NoError(err, "Should be able to copy %s", file)
+		destFile := filepath.Join(promptsDir, filename)
+		err = os.WriteFile(destFile, content, 0644)
+		s.Require().NoError(err, "Should be able to copy %s", filename)
 	}
 
 	// Verify all files were copied
-	err = helpers.VerifyInstallation(promptsDir, chatmateCount)
+	err = helpers.VerifyInstallation(promptsDir, len(chatmates))
 	s.Assert().NoError(err, "Installation should be verified successfully")
 
 	// Verify specific important chatmates were installed
@@ -99,21 +95,23 @@ func (s *IntegrationTestSuite) TestFullInstallationWorkflowLinux() {
 	s.env.SimulateOS(s.T(), "linux")
 	promptsDir := s.env.SetupMockVSCode(s.T(), "linux")
 
-	chatmateCount, err := helpers.CountFiles("../../mates", "*.chatmode.md")
-	s.Require().NoError(err)
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	s.Require().NoError(err, "Should be able to get embedded chatmate list")
+	s.Assert().Greater(len(chatmates), 0, "Should have embedded chatmate files")
 
-	// Simulate installation
-	chatmodeFiles, err := filepath.Glob("../../mates/*.chatmode.md")
-	s.Require().NoError(err)
+	// Copy embedded chatmates to prompts directory
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		s.Require().NoError(err, "Should be able to read embedded file %s", filename)
 
-	for _, file := range chatmodeFiles {
-		destFile := filepath.Join(promptsDir, filepath.Base(file))
-		copyCmd := exec.Command("cp", file, destFile)
-		err := copyCmd.Run()
-		s.Require().NoError(err, "Should be able to copy %s", file)
+		destFile := filepath.Join(promptsDir, filename)
+		err = os.WriteFile(destFile, content, 0644)
+		s.Require().NoError(err, "Should be able to copy %s", filename)
 	}
 
-	err = helpers.VerifyInstallation(promptsDir, chatmateCount)
+	// Verify all files were copied
+	err = helpers.VerifyInstallation(promptsDir, len(chatmates))
 	s.Assert().NoError(err, "Linux installation should succeed")
 }
 
@@ -126,20 +124,23 @@ func (s *IntegrationTestSuite) TestFullInstallationWorkflowWindows() {
 	s.env.SimulateOS(s.T(), "windows")
 	promptsDir := s.env.SetupMockVSCode(s.T(), "windows")
 
-	chatmateCount, err := helpers.CountFiles("../../mates", "*.chatmode.md")
-	s.Require().NoError(err)
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	s.Require().NoError(err, "Should be able to get embedded chatmate list")
+	s.Assert().Greater(len(chatmates), 0, "Should have embedded chatmate files")
 
-	// Simulate installation using copy command
-	chatmodeFiles, err := filepath.Glob("../../mates/*.chatmode.md")
-	s.Require().NoError(err)
+	// Copy embedded chatmates to prompts directory using Go's file operations
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		s.Require().NoError(err, "Should be able to read embedded file %s", filename)
 
-	for _, file := range chatmodeFiles {
-		destFile := filepath.Join(promptsDir, filepath.Base(file))
-		err := helpers.CopyFile(file, destFile)
-		s.Require().NoError(err, "Should be able to copy %s", file)
+		destFile := filepath.Join(promptsDir, filename)
+		err = os.WriteFile(destFile, content, 0644)
+		s.Require().NoError(err, "Should be able to copy %s", filename)
 	}
 
-	err = helpers.VerifyInstallation(promptsDir, chatmateCount)
+	// Verify all files were copied
+	err = helpers.VerifyInstallation(promptsDir, len(chatmates))
 	s.Assert().NoError(err, "Windows installation should succeed")
 }
 
@@ -201,17 +202,13 @@ func (s *IntegrationTestSuite) TestCLIInvalidCommand() {
 
 // TestSecurityScanning tests security validation of chatmate files
 func (s *IntegrationTestSuite) TestSecurityScanning() {
-	// Validate all existing chatmate files don't contain security issues
-	err := filepath.WalkDir("../../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	s.Require().NoError(err, "Should be able to get embedded chatmate list")
 
-		content, err := os.ReadFile(path)
-		s.Require().NoError(err, "Should be able to read %s", path)
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		s.Require().NoError(err, "Should be able to read embedded file %s", filename)
 
 		contentStr := string(content)
 
@@ -227,12 +224,9 @@ func (s *IntegrationTestSuite) TestSecurityScanning() {
 
 		for _, pattern := range suspiciousPatterns {
 			s.Assert().NotContains(contentStr, pattern,
-				"File %s should not contain suspicious pattern: %s", d.Name(), pattern)
+				"File %s should not contain suspicious pattern: %s", filename, pattern)
 		}
-
-		return nil
-	})
-	s.Require().NoError(err)
+	}
 }
 
 // TestCrossPlatformCompatibility tests file operations across platforms

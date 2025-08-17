@@ -73,6 +73,11 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
+// GetRootCommand returns the root command for testing purposes
+func GetRootCommand() *cobra.Command {
+	return rootCmd
+}
+
 func init() {
 	// Global flags can be added here
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")

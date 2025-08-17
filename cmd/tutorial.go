@@ -58,7 +58,7 @@ var tutorialCmd = &cobra.Command{
 		}
 
 		tutorialName := args[0]
-		return runTutorial(tutorialName)
+			   return runTutorial(tutorialName, promptToContinue)
 	},
 }
 
@@ -118,27 +118,29 @@ func listTutorials() error {
 }
 
 // runTutorial runs the specified tutorial
-func runTutorial(name string) error {
-	switch name {
-	case "first-time":
-		return runFirstTimeTutorial()
-	case "daily-dev":
-		return runDailyDevTutorial()
-	case "team-lead":
-		return runTeamLeadTutorial()
-	case "debugging":
-		return runDebuggingTutorial()
-	case "testing":
-		return runTestingTutorial()
-	default:
-		fmt.Printf("❌ Tutorial '%s' not found.\n\n", name)
-		fmt.Println("Run 'chatmate tutorial' to see available tutorials.")
-		return nil
-	}
+type PromptFunc func(string) bool
+
+func runTutorial(name string, prompt PromptFunc) error {
+       switch name {
+       case "first-time":
+	       return runFirstTimeTutorial(prompt)
+       case "daily-dev":
+	       return runDailyDevTutorial(prompt)
+       case "team-lead":
+	       return runTeamLeadTutorial(prompt)
+       case "debugging":
+	       return runDebuggingTutorial(prompt)
+       case "testing":
+	       return runTestingTutorial(prompt)
+       default:
+	       fmt.Printf("❌ Tutorial '%s' not found.\n\n", name)
+	       fmt.Println("Run 'chatmate tutorial' to see available tutorials.")
+	       return nil
+       }
 }
 
 // runFirstTimeTutorial runs the beginner tutorial
-func runFirstTimeTutorial() error {
+func runFirstTimeTutorial(prompt PromptFunc) error {
 	fmt.Println("🎓 Welcome to ChatMate - First Time User Tutorial!")
 	fmt.Println("=================================================")
 	fmt.Println("")
@@ -149,9 +151,9 @@ func runFirstTimeTutorial() error {
 	fmt.Println("Each chatmate is an expert in specific development tasks.")
 	fmt.Println("")
 
-	if !promptToContinue("Ready to learn about chatmates?") {
-		return nil
-	}
+       if !prompt("Ready to learn about chatmates?") {
+	       return nil
+       }
 
 	// Step 2: Check system status
 	fmt.Println("🔍 Step 2: Check Your System Status")
@@ -174,10 +176,10 @@ func runFirstTimeTutorial() error {
 	}
 
 	fmt.Println("")
-	if !promptToContinue("Does your status look good? (VS Code detected, prompts directory accessible)") {
-		fmt.Println("💡 If you see issues, run 'chatmate config' for more details or check the troubleshooting guide.")
-		return nil
-	}
+       if !prompt("Does your status look good? (VS Code detected, prompts directory accessible)") {
+	       fmt.Println("💡 If you see issues, run 'chatmate config' for more details or check the troubleshooting guide.")
+	       return nil
+       }
 
 	// Step 3: Install chatmates
 	fmt.Println("📦 Step 3: Install Your First Chatmates")
@@ -267,7 +269,7 @@ func runFirstTimeTutorial() error {
 }
 
 // runDailyDevTutorial runs the daily development workflow tutorial
-func runDailyDevTutorial() error {
+func runDailyDevTutorial(prompt PromptFunc) error {
 	fmt.Println("💻 ChatMate Daily Development Workflow Tutorial")
 	fmt.Println("===============================================")
 	fmt.Println("")
@@ -275,9 +277,9 @@ func runDailyDevTutorial() error {
 	fmt.Println("This tutorial shows you how to integrate ChatMate into your daily development routine.")
 	fmt.Println("")
 
-	if !promptToContinue("Ready to learn daily development workflows?") {
-		return nil
-	}
+       if !prompt("Ready to learn daily development workflows?") {
+	       return nil
+       }
 
 	// Morning routine
 	fmt.Println("🌅 Morning Routine: Health Check")
@@ -287,9 +289,9 @@ func runDailyDevTutorial() error {
 	fmt.Println("$ chatmate list      # Review available chatmates")
 	fmt.Println("")
 
-	if !promptToContinue("Let's run a quick health check now:") {
-		return nil
-	}
+       if !prompt("Let's run a quick health check now:") {
+	       return nil
+       }
 
 	chatMateManager, err := manager.NewChatMateManager()
 	if err != nil {
@@ -402,7 +404,7 @@ func runDailyDevTutorial() error {
 }
 
 // runTeamLeadTutorial runs the team leadership tutorial
-func runTeamLeadTutorial() error {
+func runTeamLeadTutorial(prompt PromptFunc) error {
 	fmt.Println("👥 ChatMate Team Leadership Tutorial")
 	fmt.Println("===================================")
 	fmt.Println("")
@@ -410,9 +412,9 @@ func runTeamLeadTutorial() error {
 	fmt.Println("Learn how to use ChatMate for team leadership, code reviews, and project management.")
 	fmt.Println("")
 
-	if !promptToContinue("Ready to learn team leadership workflows?") {
-		return nil
-	}
+       if !prompt("Ready to learn team leadership workflows?") {
+	       return nil
+       }
 
 	// Team scenarios
 	teamScenarios := []struct {
@@ -481,9 +483,9 @@ func runTeamLeadTutorial() error {
 		fmt.Printf("💬 Example: %s\n", scenario.Example)
 		fmt.Println("")
 
-		if !promptToContinue("Ready for the next team scenario?") {
-			return nil
-		}
+	       if !prompt("Ready for the next team scenario?") {
+		       return nil
+	       }
 	}
 
 	fmt.Println("🎯 Team Leadership Best Practices:")
@@ -499,7 +501,7 @@ func runTeamLeadTutorial() error {
 }
 
 // runDebuggingTutorial runs the debugging-focused tutorial
-func runDebuggingTutorial() error {
+func runDebuggingTutorial(prompt PromptFunc) error {
 	fmt.Println("🐛 Advanced Debugging with Solve Issue Chatmate")
 	fmt.Println("==============================================")
 	fmt.Println("")
@@ -563,7 +565,7 @@ func runDebuggingTutorial() error {
 		}
 		fmt.Println("")
 
-		if !promptToContinue("Ready for the next debugging scenario?") {
+		if !prompt("Ready for the next debugging scenario?") {
 			return nil
 		}
 	}
@@ -581,7 +583,7 @@ func runDebuggingTutorial() error {
 }
 
 // runTestingTutorial runs the testing-focused tutorial
-func runTestingTutorial() error {
+func runTestingTutorial(prompt PromptFunc) error {
 	fmt.Println("🧪 Comprehensive Testing with Testing Chatmate")
 	fmt.Println("==============================================")
 	fmt.Println("")
@@ -645,9 +647,9 @@ func runTestingTutorial() error {
 		}
 		fmt.Println("")
 
-		if !promptToContinue("Ready for the next testing approach?") {
-			return nil
-		}
+	       if !prompt("Ready for the next testing approach?") {
+		       return nil
+	       }
 	}
 
 	fmt.Println("🎯 Testing Best Practices:")

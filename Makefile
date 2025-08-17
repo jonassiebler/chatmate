@@ -62,19 +62,25 @@ build-all: ## Build binaries for all platforms
 	$(call success,"Cross-platform build completed")
 
 test: ## Run comprehensive test suite
-	$(call log,"Running test suite")
-	@./run-tests.sh
+	$(call log,"Running comprehensive Go test suite")
+	@go test ./... -cover
 	$(call success,"All tests passed")
 
 test-unit: ## Run unit tests only
 	$(call log,"Running unit tests")
-	@go test ./...
+	@go test ./cmd ./internal/manager ./pkg/...
 	$(call success,"Unit tests completed")
 
 test-integration: ## Run integration tests only
 	$(call log,"Running integration tests")
-	@./tests/bats-core/bin/bats tests/integration/
+	@go test ./test/integration/... -v
 	$(call success,"Integration tests completed")
+
+test-coverage: ## Run tests with detailed coverage report
+	$(call log,"Generating test coverage report")
+	@go test ./... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out -o coverage.html
+	$(call success,"Coverage report generated: coverage.html")
 
 clean: ## Clean build artifacts and caches
 	$(call log,"Cleaning build artifacts")

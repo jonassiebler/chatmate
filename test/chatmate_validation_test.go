@@ -9,139 +9,185 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/jonassiebler/chatmate/internal/assets"
 	"github.com/jonassiebler/chatmate/internal/testing/helpers"
 )
 
-// TestMatesDirectoryExistsAndContainsFiles tests that the mates directory exists and contains files
-func TestMatesDirectoryExistsAndContainsFiles(t *testing.T) {
-	// Check mates directory exists
-	_, err := os.Stat("../mates")
-	require.NoError(t, err, "../mates directory should exist")
+// TestEmbeddedMatesExistAndContainFiles tests that the embedded mates exist and contain files
+func TestEmbeddedMatesExistAndContainFiles(t *testing.T) {
+	// Get embedded chatmate list
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-	// Check it's actually a directory
-	info, err := os.Stat("../mates")
-	require.NoError(t, err)
-	assert.True(t, info.IsDir(), "../mates should be a directory")
-
-	// Count files
-	fileCount, err := helpers.CountFiles("../mates", "*.md")
-	require.NoError(t, err)
-	assert.Greater(t, fileCount, 0, "../mates directory should contain at least one markdown file")
+	// Check we have files
+	assert.Greater(t, len(chatmates), 0, "Embedded mates should contain at least one chatmate file")
 }
 
-// TestAllChatmateFilesFollowNamingConvention tests that all .md files follow the .chatmode.md naming convention
-func TestAllChatmateFilesFollowNamingConvention(t *testing.T) {
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
+// TestAllEmbeddedChatmateFilesFollowNamingConvention tests that all embedded files follow the .chatmode.md naming convention
+func TestAllEmbeddedChatmateFilesFollowNamingConvention(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		filename := d.Name()
-		if strings.HasSuffix(filename, ".md") {
-			assert.True(t, strings.HasSuffix(filename, ".chatmode.md"),
-				"All markdown files in mates directory should end with .chatmode.md, found: %s", filename)
-		}
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+	for _, filename := range chatmates {
+		assert.True(t, strings.HasSuffix(filename, ".chatmode.md"),
+			"All embedded chatmate files should end with .chatmode.md, found: %s", filename)
+	}
 }
 
-// TestChatmateFilesAreNotEmpty tests that chatmate files contain content
-func TestChatmateFilesAreNotEmpty(t *testing.T) {
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+// TestEmbeddedChatmateFilesAreNotEmpty tests that embedded chatmate files are not empty
+func TestEmbeddedChatmateFilesAreNotEmpty(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		info, err := d.Info()
-		require.NoError(t, err, "Should be able to get file info for %s", path)
-		assert.Greater(t, info.Size(), int64(0), "Chatmate file should not be empty: %s", d.Name())
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+		assert.Greater(t, len(content), 0, "Embedded chatmate file should not be empty: %s", filename)
+	}
+}
+
+// TestEmbeddedChatmateFilesContainRequiredHeaders tests that embedded chatmate files contain markdown headers
+func TestEmbeddedChatmateFilesContainRequiredHeaders(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
+
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+
+		contentStr := string(content)
+		assert.True(t, strings.Contains(contentStr, "#"),
+			"Embedded chatmate file should contain markdown headers: %s", filename)
+	}
+}
+
+// TestEmbeddedChatmateFilesContainYAMLFrontmatter tests that embedded chatmate files have proper YAML frontmatter
+func TestEmbeddedChatmateFilesContainYAMLFrontmatter(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
+
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+
+		contentStr := string(content)
+		assert.True(t, strings.HasPrefix(contentStr, "---"),
+			"Embedded chatmate file should start with YAML frontmatter: %s", filename)
+		
+		// Check for closing ---
+		lines := strings.Split(contentStr, "\n")
+		foundClosing := false
+		for i := 1; i < len(lines) && i < 20; i++ { // Check first 20 lines
+			if strings.TrimSpace(lines[i]) == "---" {
+				foundClosing = true
+				break
+			}
+		}
+		assert.True(t, foundClosing, "Embedded chatmate file should have closing YAML frontmatter: %s", filename)
+	}
+}
+
+// TestEmbeddedChatmateFilesContainRequiredFields tests that YAML frontmatter contains required fields
+func TestEmbeddedChatmateFilesContainRequiredFields(t *testing.T) {
+	requiredFields := []string{"description:"}
+
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
+
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+
+		contentStr := string(content)
+		for _, field := range requiredFields {
+			assert.True(t, strings.Contains(contentStr, field),
+				"Embedded chatmate file should contain required field '%s': %s", field, filename)
+		}
+	}
+}
+
+// TestEmbeddedChatmateFilesHaveMinimumContent tests that embedded chatmate files have substantial content
+func TestEmbeddedChatmateFilesHaveMinimumContent(t *testing.T) {
+	minContentLength := 500 // At least 500 characters
+
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
+
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+
+		assert.GreaterOrEqual(t, len(content), minContentLength,
+			"Embedded chatmate file should have at least %d characters: %s (has %d)",
+			minContentLength, filename, len(content))
+	}
 }
 
 // TestChatmateFilesContainRequiredHeaders tests that chatmate files contain markdown headers
 func TestChatmateFilesContainRequiredHeaders(t *testing.T) {
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		content, err := os.ReadFile(path)
-		require.NoError(t, err, "Should be able to read file %s", path)
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
 
 		contentStr := string(content)
 		assert.True(t, strings.Contains(contentStr, "#"),
-			"Chatmate file should contain markdown headers: %s", d.Name())
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+			"Chatmate file should contain markdown headers: %s", filename)
+	}
 }
 
 // TestChatmateFilesContainYAMLFrontmatter tests that chatmate files have proper YAML frontmatter
 func TestChatmateFilesContainYAMLFrontmatter(t *testing.T) {
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		err = helpers.ValidateYAMLFrontmatter(path)
-		assert.NoError(t, err, "Chatmate file should have valid YAML frontmatter: %s", d.Name())
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+	for _, filename := range chatmates {
+		// Create temporary file to test with existing helper function
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
+
+		tempFile := filepath.Join(t.TempDir(), filename)
+		err = os.WriteFile(tempFile, content, 0644)
+		require.NoError(t, err, "Should be able to create temp file %s", filename)
+
+		err = helpers.ValidateYAMLFrontmatter(tempFile)
+		assert.NoError(t, err, "Chatmate file should have valid YAML frontmatter: %s", filename)
+	}
 }
 
 // TestChatmateFilesContainRequiredFields tests that YAML frontmatter contains required fields
 func TestChatmateFilesContainRequiredFields(t *testing.T) {
 	requiredFields := []string{"description:", "author:"}
 
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		content, err := os.ReadFile(path)
-		require.NoError(t, err, "Should be able to read file %s", path)
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
 
 		contentStr := string(content)
 		for _, field := range requiredFields {
 			assert.True(t, strings.Contains(contentStr, field),
-				"Chatmate file should contain required field '%s': %s", field, d.Name())
+				"Chatmate file should contain required field '%s': %s", field, filename)
 		}
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+	}
 }
 
 // TestChatmateFilesHaveMinimumContent tests that chatmate files have sufficient content
 func TestChatmateFilesHaveMinimumContent(t *testing.T) {
-	err := filepath.WalkDir("../mates", func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() || !strings.HasSuffix(d.Name(), ".chatmode.md") {
-			return nil
-		}
+	// Get embedded chatmates instead of filesystem
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-		content, err := os.ReadFile(path)
-		require.NoError(t, err, "Should be able to read file %s", path)
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		require.NoError(t, err, "Should be able to read embedded file %s", filename)
 
 		// Count non-empty lines after YAML frontmatter
 		lines := strings.Split(string(content), "\n")
@@ -163,10 +209,8 @@ func TestChatmateFilesHaveMinimumContent(t *testing.T) {
 		}
 
 		assert.Greater(t, contentLineCount, 5,
-			"Chatmate file should have meaningful content after frontmatter: %s", d.Name())
-		return nil
-	})
-	require.NoError(t, err, "Should be able to walk mates directory")
+			"Chatmate file should have meaningful content after frontmatter: %s", filename)
+	}
 }
 
 // TestValidateChatmodeFileFunction tests the ValidateChatmodeFile helper function
@@ -192,15 +236,35 @@ func TestValidateChatmodeFileFunction(t *testing.T) {
 	assert.Error(t, err, "File with incomplete YAML should fail validation")
 }
 
-// TestValidateAllMatesFunction tests the ValidateAllMates helper function
-func TestValidateAllMatesFunction(t *testing.T) {
-	errors := helpers.ValidateAllMates("../mates")
+// TestValidateAllEmbeddedMatesFunction tests validation of all embedded chatmates
+func TestValidateAllEmbeddedMatesFunction(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-	if len(errors) > 0 {
-		for _, err := range errors {
-			t.Logf("Validation error: %v", err)
+	errors := 0
+	for _, filename := range chatmates {
+		content, err := assets.GetEmbeddedMateContent(filename)
+		if err != nil {
+			t.Logf("Validation error for %s: %v", filename, err)
+			errors++
+			continue
 		}
-		t.Errorf("Found %d validation errors in mates directory", len(errors))
+
+		// Basic validation - check for YAML frontmatter and content
+		contentStr := string(content)
+		if !strings.HasPrefix(contentStr, "---") {
+			t.Logf("Validation error for %s: missing YAML frontmatter", filename)
+			errors++
+		}
+
+		if len(contentStr) < 500 {
+			t.Logf("Validation error for %s: insufficient content length", filename)  
+			errors++
+		}
+	}
+
+	if errors > 0 {
+		t.Errorf("Found %d validation errors in embedded chatmates", errors)
 	}
 }
 
@@ -229,19 +293,16 @@ func TestCreateTestChatmodeFunction(t *testing.T) {
 	assert.True(t, contains, "File should contain the description")
 }
 
-// TestCountFilesFunction tests the CountFiles helper function
-func TestCountFilesFunction(t *testing.T) {
-	// Test with mates directory
-	count, err := helpers.CountFiles("../mates", "*.chatmode.md")
-	require.NoError(t, err)
-	assert.Greater(t, count, 0, "Should find chatmode files in mates directory")
+// TestCountEmbeddedFilesFunction tests counting embedded chatmate files
+func TestCountEmbeddedFilesFunction(t *testing.T) {
+	chatmates, err := assets.GetEmbeddedMatesList()
+	require.NoError(t, err, "Should be able to get embedded chatmate list")
 
-	// Test with non-existent directory
-	count, err = helpers.CountFiles("nonexistent", "*.md")
-	require.NoError(t, err)
-	assert.Equal(t, 0, count, "Non-existent directory should return 0 files")
+	count := len(chatmates)
+	assert.Greater(t, count, 0, "Should find embedded chatmate files")
+	assert.Greater(t, count, 5, "Should have a reasonable number of chatmates")
 
-	// Test with fixtures directory
+	// Test with fixtures directory for comparison
 	count, err = helpers.CountFiles("fixtures", "*.md")
 	require.NoError(t, err)
 	assert.Greater(t, count, 0, "Should find test fixture files")

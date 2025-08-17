@@ -1,5 +1,6 @@
 ---
-description: 'Review PR'
+description:
+author: 'ChatMate' 'Review PR'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
@@ -159,7 +160,7 @@ Post comprehensive review comment to PR:
 
 ## 📊 Quality Assessment
 ### Code Quality: [Score]/100
-### Security: [Score]/100  
+### Security: [Score]/100
 ### Performance: [Score]/100
 
 ## ✅ Requirements Compliance
@@ -169,7 +170,7 @@ Post comprehensive review comment to PR:
 ### Must Fix (Blocking)
 - [ ] [Critical issue 1]
 
-### Should Fix (Recommended)  
+### Should Fix (Recommended)
 - [ ] [Important improvement 1]
 
 ### Could Fix (Optional)
