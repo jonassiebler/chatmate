@@ -18,7 +18,6 @@ Welcome to the Chatmate project! 🎉 We're excited that you want to contribute.
 
 ## Quick Start
 
-
 1. **Fork and clone the repository**
 
    ```bash
@@ -138,7 +137,6 @@ chatmate/
 ├── mates/                # Built-in chatmate definitions
 └── assets/               # Static assets
 ```
-
 ### Key Components
 
 - **cmd/**: CLI interface using Cobra framework
@@ -275,7 +273,6 @@ We use a multi-layered testing approach:
    ```
 
 ### Writing Tests
-
 #### BATS Test Example
 ```bash
 #!/usr/bin/env bats
@@ -294,7 +291,6 @@ load '../helpers/test_helper'
     assert_output --partial "name is required"
 }
 ```
-
 #### Go Test Example
 ```go
 func TestManager_HireChatmate(t *testing.T) {
@@ -390,10 +386,8 @@ Security is a top priority for Chatmate:
 ```bash
 # Run security scan
 ./chatmate status --security-scan
-
 # Check for vulnerabilities
 go list -json -deps | nancy sleuth
-
 # Static analysis
 go vet ./...
 staticcheck ./...
@@ -460,6 +454,7 @@ staticcheck ./...
    //   if err != nil {
    //       log.Fatal(err)
    //   }
+
    func (cm *ChatmateManager) HireChatmate(name, personality, expertise string) error {
    ```
 
@@ -587,8 +582,7 @@ We use semantic versioning (SemVer):
    GOOS=darwin go build
    ```
 
+
 ## Thank You! 🙏
-
 Thank you for contributing to Chatmate! Your contributions help make AI assistance more accessible and effective for developers worldwide.
-
 For questions or support, please open an issue or start a discussion on GitHub. We're here to help and excited to see what you build! 🚀
