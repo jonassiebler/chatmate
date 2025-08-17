@@ -513,6 +513,23 @@ staticcheck ./...
 
 ## Release Process
 
+## Homebrew Tap Publishing (Maintainers)
+
+After releasing a new version, update and publish the Homebrew tap:
+
+1. Follow the release process above to tag and push a new version.
+2. Update `homebrew-tap/Formula/chatmate.rb` with the new commit hash and version.
+3. Test the formula locally:
+   ```bash
+   brew uninstall chatmate
+   brew install --build-from-source ./homebrew-tap/Formula/chatmate.rb
+   chatmate --help
+   ```
+4. Push the updated formula to the repository (and/or the separate tap repo if used).
+5. See [docs/HOMEBREW_PUBLISHING.md](docs/HOMEBREW_PUBLISHING.md) for a detailed step-by-step guide.
+
+Consider automating this process with a GitHub Action for future releases.
+
 ### Version Management
 
 We use semantic versioning (SemVer):
