@@ -40,7 +40,7 @@ jobs:
         required_files=(
           "README.md"
           "CONTRIBUTING.md"
-          "hire.sh"
+          "scripts/hire.sh"
           ".github/pull_request_template.md"
         )
         
@@ -141,10 +141,10 @@ jobs:
         echo "🧪 Testing installation script on ${{ runner.os }}..."
         
         # Make script executable
-        chmod +x hire.sh
+        chmod +x scripts/hire.sh
         
         # Check script syntax
-        bash -n hire.sh
+        bash -n scripts/hire.sh
         echo "✅ Script syntax check passed"
         
         # Test dry run (without actual installation)
