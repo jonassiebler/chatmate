@@ -1,0 +1,71 @@
+.nh
+.TH "chatmate-status" "1" "Aug 2025" "ChatMate CLI" "ChatMate Manual"
+
+.SH NAME
+chatmate-status - Show ChatMate installation status and system information
+
+
+.SH SYNOPSIS
+\fBchatmate status [flags]\fP
+
+
+.SH DESCRIPTION
+Display comprehensive status information about your ChatMate installation,
+VS Code integration, and system configuration.
+
+.PP
+🔍 System Checks:
+• VS Code installation detection and version info
+• ChatMate prompts directory location and permissions
+• Installed vs available chatmate statistics
+• Integration health and configuration validation
+
+.PP
+📊 Information Provided:
+• VS Code installation path and status
+• User prompts directory path and accessibility
+• Count of installed/available chatmates
+• System platform and environment details
+• Troubleshooting hints for common issues
+
+.PP
+🎯 Use Cases:
+• Verify ChatMate is properly installed and configured
+• Troubleshoot installation or integration issues
+• Get system information for support requests
+• Check health before installing or updating chatmates
+
+.PP
+💡 Troubleshooting:
+• If VS Code isn't detected, ensure it's in your PATH
+• If prompts directory is missing, it will be created automatically
+• Run this command after any major system or VS Code updates
+
+
+.SH OPTIONS
+\fB-h\fP, \fB--help\fP[=false]
+	help for status
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+\fB-v\fP, \fB--verbose\fP[=false]
+	Verbose output
+
+
+.SH EXAMPLE
+.EX
+  # Show complete ChatMate installation status
+  chatmate status
+  
+  # Common troubleshooting workflow
+  chatmate status          # Check system health
+  chatmate list           # Verify chatmate availability  
+  chatmate hire --force   # Force reinstall if needed
+  
+  # Get status info for support requests
+  chatmate status > chatmate-status.txt
+.EE
+
+
+.SH SEE ALSO
+\fBchatmate(1)\fP

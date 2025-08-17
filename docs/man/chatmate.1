@@ -1,0 +1,81 @@
+.nh
+.TH "ChatMate" "1" "Aug 2025" "ChatMate CLI" "ChatMate Manual"
+
+.SH NAME
+chatmate - Open source collection of specialized AI agents for VS Code Copilot Chat
+
+
+.SH SYNOPSIS
+\fBchatmate [flags]\fP
+
+
+.SH DESCRIPTION
+ChatMate is a CLI tool for managing specialized AI agents (chatmates) for VS Code Copilot Chat.
+Each chatmate is a carefully crafted prompt designed to excel at specific development tasks.
+
+.PP
+🤖 What are Chatmates?
+Chatmates are specialized AI agents that bring expertise in specific areas:
+• Code Review: Expert code analysis and improvement suggestions
+• Testing: Comprehensive test generation and debugging assistance
+.br
+• Documentation: API docs, README files, and technical writing
+• Issue Resolution: Systematic debugging and problem solving
+• Code Generation: Boilerplate, patterns, and architecture guidance
+
+.PP
+🚀 Quick Start:
+  chatmate hire        # Install all chatmates (recommended)
+  chatmate list        # View available chatmates
+  chatmate status      # Check installation status
+
+.PP
+💡 Common Workflows:
+  # First time setup
+  chatmate hire
+
+.PP
+# Check what's installed
+  chatmate status
+
+.PP
+# Install specific chatmates
+  chatmate hire "Solve Issue" "Testing"
+
+.PP
+# Remove chatmates you don't need
+  chatmate uninstall "Create PR"
+
+
+.SH OPTIONS
+\fB-h\fP, \fB--help\fP[=false]
+	help for chatmate
+
+.PP
+\fB-v\fP, \fB--verbose\fP[=false]
+	Verbose output
+
+
+.SH EXAMPLE
+.EX
+  # Install all available chatmates (recommended for new users)
+  chatmate hire
+  
+  # List available chatmates with installation status
+  chatmate list
+  
+  # Check VS Code integration and system status
+  chatmate status
+  
+  # Install only specific chatmates
+  chatmate hire "Solve Issue" "Code Review" "Testing"
+  
+  # Remove specific chatmates
+  chatmate uninstall "Create PR" "Merge PR"
+  
+  # Force reinstall all chatmates (useful after updates)
+  chatmate hire --force
+  
+  # View system configuration and paths
+  chatmate config
+.EE

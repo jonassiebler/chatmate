@@ -1,0 +1,40 @@
+# Node.js dependencies (legacy - can be removed if not needed)
+node_modules/
+
+# npm/yarn logs (legacy - can be removed if not needed)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage reports
+coverage/
+coverage.out
+coverage.html
+
+# Go test binaries and build artifacts
+*.test
+chatmate
+chatmate.exe
+
+# Build outputs
+/build/output/
+/dist/
+/bin/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+logs/
+*.log
