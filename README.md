@@ -111,10 +111,34 @@ chatmate uninstall "Rarely Used"  # Clean up
 
 ## 🔧 Installation Methods
 
-### CLI Installation (Recommended)
+git clone https://github.com/jonassiebler/chatmate.git
+go build -o chatmate .
 
-Build and install the ChatMate CLI tool:
+### Homebrew Tap Installation (Recommended)
 
+Install ChatMate easily via Homebrew:
+
+```bash
+# Add the ChatMate tap
+brew tap jonassiebler/chatmate
+
+# Install the CLI
+brew install chatmate
+
+# (Optional) Update to latest version
+brew upgrade chatmate
+
+# Install all chatmates
+chatmate hire
+```
+
+**That's it!** Restart VS Code and start using your new chatmates with `@ChatmateName` in Copilot Chat.
+
+---
+
+### CLI Installation (Manual)
+
+Build and install the ChatMate CLI tool manually:
 
 ```bash
 # Clone the repository
