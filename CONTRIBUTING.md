@@ -1,3 +1,4 @@
+
 # Contributing to Chatmate
 
 Welcome to the Chatmate project! 🎉 We're excited that you want to contribute. This guide will help you get started with development, testing, and contributing to the codebase.
@@ -17,28 +18,38 @@ Welcome to the Chatmate project! 🎉 We're excited that you want to contribute.
 
 ## Quick Start
 
+
 1. **Fork and clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/chatmate.git
    cd chatmate
    ```
 
+
 2. **Install dependencies**
+
    ```bash
    go mod download
    ```
 
+
 3. **Build the project**
+
    ```bash
    go build -o chatmate
    ```
 
+
 4. **Run tests**
+
    ```bash
    ./run-tests.sh
    ```
 
+
 5. **Try your changes**
+
    ```bash
    ./chatmate --help
    ```

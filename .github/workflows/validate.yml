@@ -24,7 +24,6 @@ jobs:
           "internal/assets/mates"
           ".github"
           ".github/workflows"
-          ".github/ISSUE_TEMPLATE"
         )
         
         for dir in "${required_dirs[@]}"; do
