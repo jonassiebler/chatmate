@@ -68,12 +68,17 @@ After publishing, users can install ChatMate via:
 # Add the tap with full URL (required for single repository approach)
 brew tap jonassiebler/chatmate https://github.com/jonassiebler/chatmate.git
 
-# Install ChatMate
+# Install ChatMate (first time)
 brew install chatmate
 
-# Verify
+# Upgrade ChatMate (for existing installations)
+brew update && brew upgrade chatmate
+
+# Verify version
 chatmate --version
 ```
+
+**Note:** Users with existing installations can simply run `brew upgrade chatmate` to get the latest version. No need to uninstall/reinstall.
 
 ## Troubleshooting
 - **"Repository not found" error**: This happens when using the short form `brew tap jonassiebler/chatmate`. Use the full URL form instead.
