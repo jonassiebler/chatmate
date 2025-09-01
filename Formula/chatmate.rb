@@ -1,10 +1,8 @@
 class Chatmate < Formula
   desc "AI-powered CLI for managing VS Code Copilot Chat agents (chatmates)"
   homepage "https://github.com/jonassiebler/chatmate"
-  url "https://github.com/jonassiebler/chatmate.git",
-      using:    :git,
-      revision: "cd8718b"
-  version "20250817113552"
+  url "https://github.com/jonassiebler/chatmate/archive/refs/tags/v1.0.0.tar.gz"
+  sha256 "6c625da12eabf2762ae8d6059c5c5a2448d21090039f66cc344252c77961abd5"
   license "MIT"
   head "https://github.com/jonassiebler/chatmate.git", branch: "dev"
 
