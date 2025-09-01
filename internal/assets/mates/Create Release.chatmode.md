@@ -53,6 +53,8 @@ Automate complete release workflow by:
 
 ### 3. Release Notes Generation Phase
 
+**CRITICAL**: Release notes should NEVER be stored in the repository. Always generate them dynamically for each release.
+
 **Concise Release Notes Structure:**
 ```markdown
 ## What's New
@@ -71,12 +73,14 @@ Automate complete release workflow by:
 ```
 
 **Content Generation Process:**
-- **Extract key changes** from commit messages and CHANGELOG.md unreleased section
+- **Generate notes dynamically** from commit messages and CHANGELOG.md unreleased section
+- **Never create release_notes.md** or similar files in the repository
 - **Group by change type** (Added, Fixed, Changed, Security)
 - **Write concise descriptions** (1-2 lines per item)
 - **Highlight breaking changes** prominently if present
 - **Include upgrade instructions** when relevant
 - **Add full changelog link** for detailed view
+- **Use temporary files or direct CLI input** for GitHub release creation
 
 ### 4. Git Tag Creation Phase
 
@@ -108,10 +112,19 @@ Key changes:
 
 **GitHub CLI Command Pattern:**
 ```bash
+# Option 1: Direct notes input (preferred)
 gh release create v1.0.2 \
   --title "Project v1.0.2 - Brief Description" \
-  --notes "$(cat release_notes.md)" \
+  --notes "$(generate_release_notes_here)" \
   --latest
+
+# Option 2: Temporary file (cleanup required)
+echo "Release notes content..." > /tmp/release_notes.tmp
+gh release create v1.0.2 \
+  --title "Project v1.0.2 - Brief Description" \
+  --notes-file /tmp/release_notes.tmp \
+  --latest
+rm /tmp/release_notes.tmp
 ```
 
 ### 6. Post-Release Tasks Phase
@@ -121,7 +134,8 @@ gh release create v1.0.2 \
 - **Merge changes** back to main branch if working from development branch
 - **Push all changes** to origin
 - **Verify release** is properly published and accessible
-- **Clean up temporary files** (release notes, etc.)
+- **NEVER commit release notes files** - they should be generated dynamically
+- **Clean up any temporary files** used during release process
 
 ## Release Scenarios
 
@@ -205,10 +219,20 @@ git log --oneline main..dev
 git tag -a v1.0.2 -m "Release v1.0.2 - Bug fixes and improvements"
 git push origin v1.0.2
 
-# Create GitHub release  
+# Create GitHub release with dynamic notes (NO FILES)
+RELEASE_NOTES="## What's New
+- Enhanced project setup tools
+- Improved documentation
+
+## Changes
+- **Added**: Create Release automation
+- **Improved**: Documentation and setup process
+
+**Full Changelog**: https://github.com/owner/repo/compare/v1.0.1...v1.0.2"
+
 gh release create v1.0.2 \
   --title "Project v1.0.2 - Stability Improvements" \
-  --notes-file release_notes.md \
+  --notes "$RELEASE_NOTES" \
   --latest
 ```
 
@@ -240,6 +264,8 @@ A successful release includes:
 - **Coordinate timing**: Consider user timezone and impact
 - **Communicate changes**: Clear, honest description of changes
 - **Version consistency**: Maintain consistent versioning across all components
+- **NEVER store release notes**: Generate them dynamically for each release
+- **Keep repository clean**: Only commit permanent project files, not release artifacts
 
 ### Security Considerations:
 - **Review changes**: Audit all changes included in release

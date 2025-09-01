@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-09-01
+
+### Added
+- Create Release chatmate - automated release workflow management (#9)
+- Create Chatmate chatmate for project setup and initialization
+
+### Improved
+- Documentation with upgrade instructions for Homebrew publishing guide
+- General cleanup and maintenance improvements
+
+## [1.0.1] - 2025-09-01
+
+### Added
+- Homebrew tap integration and publishing setup
+- Version display in Homebrew formula with proper ldflags
+
+### Changed
+- Restructured project for direct Homebrew tap usage
+
 ## [1.0.0] - 2025-09-01
 
 ### Added
