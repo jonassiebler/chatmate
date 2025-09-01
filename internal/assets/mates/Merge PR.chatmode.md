@@ -1,7 +1,7 @@
 ---
 description:
 author: 'ChatMate' 'Merge PR'
-model: 'Claude Sonnet 4'
+model: 'GPT-4.1'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
 

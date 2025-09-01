@@ -39,7 +39,7 @@ var (
 	SafeFilenamePattern = regexp.MustCompile(`^[a-zA-Z0-9\s\.\-_]+$`)
 
 	// ChatmateFilenamePattern specifically for .chatmode.md files
-	ChatmateFilenamePattern = regexp.MustCompile(`^[a-zA-Z0-9\s\-_]+\.chatmode\.md$`)
+	ChatmateFilenamePattern = regexp.MustCompile(`^[a-zA-Z0-9\s\-_.]+\.chatmode\.md$`)
 
 	// SafePathPattern prevents directory traversal attacks
 	SafePathPattern = regexp.MustCompile(`^[^<>:"|?*]+$`)
