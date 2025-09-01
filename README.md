@@ -132,6 +132,8 @@ brew upgrade chatmate
 chatmate hire
 ```
 
+**Maintainers:** See [docs/HOMEBREW_PUBLISHING.md](docs/HOMEBREW_PUBLISHING.md) for step-by-step instructions on updating and publishing the Homebrew tap after a new release.
+
 **That's it!** Restart VS Code and start using your new chatmates with `@ChatmateName` in Copilot Chat.
 
 ---
