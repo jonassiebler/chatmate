@@ -120,7 +120,7 @@ Install ChatMate easily via Homebrew:
 
 ```bash
 # Add the ChatMate tap
-brew tap jonassiebler/chatmate
+brew tap jonassiebler/chatmate https://github.com/jonassiebler/chatmate.git
 
 # Install the CLI
 brew install chatmate

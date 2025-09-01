@@ -3,58 +3,93 @@
 This document describes how to update and publish the Homebrew tap for the ChatMate CLI.
 
 ## Prerequisites
-- You must have push access to the `jonassiebler/chatmate` and `jonassiebler/homebrew-tap` repositories.
-- Homebrew and Go must be installed locally.
+- You must have push access to the `jonassiebler/chatmate` repository
+- Homebrew and Go must be installed locally
+
+## Current Setup
+ChatMate uses a **single repository approach** with the Formula located at `Formula/chatmate.rb` in the main repository. Users install via:
+
+```bash
+brew tap jonassiebler/chatmate https://github.com/jonassiebler/chatmate.git
+brew install chatmate
+```
 
 ## Steps to Publish a New Release to Homebrew
 
-1. **Release a new version of ChatMate:**
-   - Run the release script to tag and build a new version:
-     ```bash
-     ./scripts/release.sh <version> --push
-     ```
-   - This will create a new tag and push it to GitHub.
+### 1. Create a New Release
+```bash
+# Create and push a new GitHub release with binaries
+gh release create v1.x.x --generate-notes --title "ChatMate v1.x.x"
+```
 
-2. **Update the Homebrew Formula:**
-   - Edit `homebrew-tap/Formula/chatmate.rb`:
-     - Update the `revision` field to the latest commit hash for the release.
-     - Update the `version` field to the new version (e.g., `20250817113552`).
-   - Commit and push the formula update:
-     ```bash
-     git add homebrew-tap/Formula/chatmate.rb
-     git commit -m "chore: update Homebrew formula for v<version>"
-     git push origin <branch>
-     ```
+### 2. Update the Homebrew Formula
+Edit `Formula/chatmate.rb` and update:
+- `url` field to point to the new release tarball
+- `sha256` field with the new tarball's checksum
 
-3. **Test the Formula Locally:**
-   - Uninstall any existing version:
-     ```bash
-     brew uninstall chatmate
-     ```
-   - Install from the updated formula:
-     ```bash
-     brew install --build-from-source ./homebrew-tap/Formula/chatmate.rb
-     ```
-   - Verify installation:
-     ```bash
-     chatmate --help
-     ```
+Example:
+```ruby
+class Chatmate < Formula
+  desc "CLI tool for managing AI-powered VS Code Copilot Chat agents"
+  homepage "https://github.com/jonassiebler/chatmate"
+  url "https://github.com/jonassiebler/chatmate/archive/refs/tags/v1.x.x.tar.gz"
+  sha256 "your-new-sha256-hash-here"
+  license "MIT"
+  # ... rest of formula
+end
+```
 
-4. **Publish to the Homebrew Tap Repository:**
-   - If you maintain a separate `homebrew-tap` repo, copy the updated formula there and push.
-   - Otherwise, users can tap directly from this repo:
-     ```bash
-     brew tap jonassiebler/chatmate
-     brew install chatmate
-     ```
+### 3. Calculate SHA256 for New Release
+```bash
+# Download the release tarball and calculate its SHA256
+curl -L https://github.com/jonassiebler/chatmate/archive/refs/tags/v1.x.x.tar.gz | sha256sum
+```
+
+### 4. Test the Formula Locally
+```bash
+# Test installation from local formula
+brew install --build-from-source Formula/chatmate.rb
+
+# Verify installation
+chatmate --version
+```
+
+### 5. Commit and Push Formula Updates
+```bash
+git add Formula/chatmate.rb
+git commit -m "chore: update Homebrew formula for v1.x.x"
+git push origin main
+```
+
+## Testing User Installation
+After publishing, users can install ChatMate via:
+
+```bash
+# Add the tap with full URL (required for single repository approach)
+brew tap jonassiebler/chatmate https://github.com/jonassiebler/chatmate.git
+
+# Install ChatMate
+brew install chatmate
+
+# Verify
+chatmate --version
+```
+
+## Troubleshooting
+- **"Repository not found" error**: This happens when using the short form `brew tap jonassiebler/chatmate`. Use the full URL form instead.
+- **Formula not found**: Ensure `Formula/chatmate.rb` exists in the repository root
+- **Build failures**: Check that the SHA256 matches the actual tarball and the Go build process works
+- **Version mismatches**: Ensure the GitHub release tag matches the URL in the formula
+
+## Future Considerations
+If ChatMate gains significant popularity, consider:
+1. Submitting to [homebrew-core](https://github.com/Homebrew/homebrew-core) for better discoverability
+2. Setting up automated formula updates via GitHub Actions
+3. Using [goreleaser](https://goreleaser.com/) for automated releases and homebrew integration
 
 ## Automation (Optional)
 - Consider adding a GitHub Action to update the formula automatically on new releases.
 - See the official Homebrew documentation for [creating and maintaining taps](https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap).
-
-## Troubleshooting
-- If users report issues, ensure the formula revision and version match the latest release.
-- Check build logs for Go or Homebrew errors.
 
 ---
 
