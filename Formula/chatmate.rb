@@ -9,7 +9,14 @@ class Chatmate < Formula
   depends_on "go" => :build
 
   def install
-    system "go", "build", *std_go_args(output: bin/"chatmate"), "."
+    # Set version information via ldflags during build
+    ldflags = %W[
+      -X github.com/jonassiebler/chatmate/cmd.version=#{version}
+      -X github.com/jonassiebler/chatmate/cmd.commit=homebrew-#{version}
+      -X github.com/jonassiebler/chatmate/cmd.date=#{Date.today.iso8601}
+    ]
+    
+    system "go", "build", *std_go_args(output: bin/"chatmate", ldflags: ldflags), "."
     man1.install "docs/man/chatmate.1"
   end
 
