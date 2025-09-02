@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  GO_VERSION: '1.23.x'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        
+    - name: Get version info
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        COMMIT=$(git rev-parse --short HEAD)
+        DATE=$(date -u '+%Y-%m-%d_%H:%M:%S')
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "COMMIT=${COMMIT}" >> $GITHUB_OUTPUT
+        echo "DATE=${DATE}" >> $GITHUB_OUTPUT
+        
+    - name: Build release binaries
+      run: |
+        mkdir -p dist
+        
+        # Build for different platforms
+        platforms=(
+          "linux/amd64"
+          "darwin/amd64" 
+          "darwin/arm64"
+          "windows/amd64"
+        )
+        
+        for platform in "${platforms[@]}"; do
+          GOOS=${platform%/*}
+          GOARCH=${platform#*/}
+          output_name="chatmate-${GOOS}-${GOARCH}"
+          
+          if [ "$GOOS" = "windows" ]; then
+            output_name="${output_name}.exe"
+          fi
+          
+          echo "Building for $GOOS/$GOARCH..."
+          CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build \
+            -ldflags="-s -w -X 'github.com/jonassiebler/chatmate/cmd.version=${{ steps.version.outputs.VERSION }}' -X 'github.com/jonassiebler/chatmate/cmd.commit=${{ steps.version.outputs.COMMIT }}' -X 'github.com/jonassiebler/chatmate/cmd.date=${{ steps.version.outputs.DATE }}'" \
+            -trimpath \
+            -o "dist/${output_name}" .
+        done
+        
+    - name: Generate checksums
+      run: |
+        cd dist
+        sha256sum * > checksums.txt
+        
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        VERSION="${{ steps.version.outputs.VERSION }}"
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        
+        # Simple release notes
+        cat > release_notes.md << EOF
+        ## ChatMate ${VERSION}
+        
+        ### What's Changed
+        $(git log --pretty=format:"- %s" \$(git describe --tags --abbrev=0 HEAD~1)..HEAD 2>/dev/null || git log --pretty=format:"- %s" HEAD~10..HEAD)
+        
+        ### Installation
+        Download the appropriate binary for your platform from the assets below.
+        
+        **Full Changelog**: https://github.com/jonassiebler/chatmate/commits/${VERSION}
+        EOF
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        name: "ChatMate ${{ steps.version.outputs.VERSION }}"
+        body_path: release_notes.md
+        files: |
+          dist/*
+        draft: false
+        prerelease: false
