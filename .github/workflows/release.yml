@@ -79,7 +79,7 @@ jobs:
         ## ChatMate ${VERSION}
         
         ### What's Changed
-        $(git log --pretty=format:"- %s" \$(git describe --tags --abbrev=0 HEAD~1)..HEAD 2>/dev/null || git log --pretty=format:"- %s" HEAD~10..HEAD)
+        $(git log --pretty=format:"- %s" HEAD~10..HEAD)
         
         ### Installation
         Download the appropriate binary for your platform from the assets below.
