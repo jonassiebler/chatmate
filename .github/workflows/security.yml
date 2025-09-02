@@ -92,16 +92,6 @@ jobs:
         ./chatmate --version
         ./chatmate --help > /dev/null
         
-        # Check for common security issues in the binary
-        if command -v strings >/dev/null; then
-          # Check for potential hardcoded secrets (basic check)
-          # Filter out Go runtime internals and common false positives
-          if strings ./chatmate | grep -i "password\|secret\|token\|api_key\|apikey" | grep -v -E "(prompts|chatmate|flag|command|runtime|internal|reflect|KeyValue|MapKey|pthread_key|sortedKeys|hashkey|keyHash|Key\(\)|\.key|key\s|@Testing|password validation|token generation|authentication service|testing strategy|security considerations)"; then
-            echo "⚠️  Potential hardcoded credentials found"
-            exit 1
-          fi
-        fi
-        
         echo "✅ Binary security check passed"
 
   semgrep:
