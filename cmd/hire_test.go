@@ -179,7 +179,7 @@ func TestHireCommandArguments(t *testing.T) {
 
 			// Execute command and check argument handling
 			err := hireCmd.RunE(hireCmd, tc.args)
-			
+
 			// Command will likely fail due to missing directories, but we can still test arg parsing
 			if err != nil {
 				t.Logf("Command failed as expected: %v", err)

@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 	"testing"
-	
+
 	"github.com/spf13/cobra"
 )
 
@@ -190,7 +190,7 @@ func TestAllCommandsHaveRunE(t *testing.T) {
 		if cmd == nil {
 			continue
 		}
-		
+
 		t.Run(cmd.Use, func(t *testing.T) {
 			if cmd.RunE == nil {
 				t.Errorf("Command %s should have a RunE function", cmd.Use)
@@ -213,12 +213,12 @@ func TestCommandHelpText(t *testing.T) {
 		if cmd == nil {
 			continue
 		}
-		
+
 		t.Run(cmd.Use, func(t *testing.T) {
 			if cmd.Long == "" {
 				t.Errorf("Command %s should have detailed help text (Long)", cmd.Use)
 			}
-			
+
 			if cmd.Example == "" {
 				t.Logf("Command %s could benefit from usage examples", cmd.Use)
 			}

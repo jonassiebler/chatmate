@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 	"testing"
-	
+
 	"github.com/spf13/cobra"
 )
 
@@ -53,7 +53,7 @@ func TestVersionCommand(t *testing.T) {
 			break
 		}
 	}
-	
+
 	if !found {
 		t.Error("Version command should exist")
 	}
@@ -116,24 +116,24 @@ func TestGlobalFlags(t *testing.T) {
 // TestCommandHelp tests help functionality for all commands
 func TestCommandHelp(t *testing.T) {
 	commands := []*cobra.Command{rootCmd, hireCmd, listCmd, statusCmd, configCmd, uninstallCmd}
-	
+
 	for _, cmd := range commands {
 		if cmd == nil {
 			continue
 		}
-		
+
 		t.Run(cmd.Name(), func(t *testing.T) {
 			// Test that command has some help text
 			if cmd.Short == "" {
 				t.Errorf("Command %s should have short help text", cmd.Name())
 			}
-			
+
 			// Test that complex commands have detailed help
 			if cmd.Name() == "hire" || cmd.Name() == "list" || cmd.Name() == "uninstall" {
 				if cmd.Long == "" {
 					t.Errorf("Command %s should have detailed help text", cmd.Name())
 				}
-				
+
 				if cmd.Example == "" {
 					t.Logf("Command %s could benefit from examples", cmd.Name())
 				}
@@ -145,8 +145,8 @@ func TestCommandHelp(t *testing.T) {
 // TestCommandFlags tests that all commands have proper flag definitions
 func TestCommandFlags(t *testing.T) {
 	testCases := []struct {
-		cmd  *cobra.Command
-		name string
+		cmd           *cobra.Command
+		name          string
 		expectedFlags []string
 	}{
 		{hireCmd, "hire", []string{"force", "specific"}},
@@ -158,7 +158,7 @@ func TestCommandFlags(t *testing.T) {
 		if tc.cmd == nil {
 			continue
 		}
-		
+
 		t.Run(tc.name, func(t *testing.T) {
 			for _, flagName := range tc.expectedFlags {
 				flag := tc.cmd.Flags().Lookup(flagName)

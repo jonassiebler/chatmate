@@ -73,7 +73,7 @@ func TestEmbeddedChatmateFilesContainYAMLFrontmatter(t *testing.T) {
 		contentStr := string(content)
 		assert.True(t, strings.HasPrefix(contentStr, "---"),
 			"Embedded chatmate file should start with YAML frontmatter: %s", filename)
-		
+
 		// Check for closing ---
 		lines := strings.Split(contentStr, "\n")
 		foundClosing := false
@@ -258,7 +258,7 @@ func TestValidateAllEmbeddedMatesFunction(t *testing.T) {
 		}
 
 		if len(contentStr) < 500 {
-			t.Logf("Validation error for %s: insufficient content length", filename)  
+			t.Logf("Validation error for %s: insufficient content length", filename)
 			errors++
 		}
 	}
