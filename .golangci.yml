@@ -1,0 +1,16 @@
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - staticcheck
+    - path: test/
+      linters:
+        - errcheck
+        - staticcheck
+    - path: internal/testing/
+      linters:
+        - errcheck
+        - staticcheck
+  max-issues-per-linter: 10
+  max-same-issues: 5
