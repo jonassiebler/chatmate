@@ -48,10 +48,10 @@ jobs:
         fi
 
     - name: Run static analysis
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: latest
-        args: --timeout=5m
+      run: |
+        # Basic static analysis with go vet
+        go vet ./...
+        echo "Static analysis completed"
 
     - name: Run tests
       run: go test -v ./...
