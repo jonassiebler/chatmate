@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 env:
-  GO_VERSION: '1.25.0'
+  GO_VERSION: '1.23.x'
 
 jobs:
   test:
@@ -75,8 +75,8 @@ jobs:
     - name: Run integration tests (Unix)
       if: matrix.os != 'windows-latest'
       run: |
-        chmod +x run-tests.sh
-        ./run-tests.sh
+        chmod +x scripts/run-tests.sh
+        ./scripts/run-tests.sh
         
     - name: Run integration tests (Windows)
       if: matrix.os == 'windows-latest'

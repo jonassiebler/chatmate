@@ -74,12 +74,12 @@ jobs:
         fi
         
         # Count chatmates
-        CHATMATE_COUNT=$(find mates -name "*.chatmode.md" | wc -l)
+        CHATMATE_COUNT=$(find internal/assets/mates -name "*.chatmode.md" | wc -l)
         CHANGELOG+="## Chatmates Included\n\n"
         CHANGELOG+="This release includes **$CHATMATE_COUNT** chatmates:\n\n"
         
         # List all chatmates
-        for file in mates/*.chatmode.md; do
+        for file in internal/assets/mates/*.chatmode.md; do
           if [ -f "$file" ]; then
             name=$(basename "$file" .chatmode.md)
             CHANGELOG+="- $name\n"
@@ -94,7 +94,7 @@ jobs:
         CHANGELOG+="   \`\`\`\n\n"
         CHANGELOG+="2. Install chatmates:\n"
         CHANGELOG+="   \`\`\`bash\n"
-        CHANGELOG+="   ./hire.sh\n"
+        CHANGELOG+="   ./scripts/hire.sh\n"
         CHANGELOG+="   \`\`\`\n\n"
         CHANGELOG+="3. Restart VS Code to use your new chatmates\n\n"
         CHANGELOG+="For more information, see the [README](https://github.com/jonassiebler/chatmate/blob/main/README.md)."
@@ -118,8 +118,8 @@ jobs:
         mkdir -p release
         
         # Copy essential files
-        cp -r mates release/
-        cp hire.sh release/
+        cp -r internal/assets/mates release/
+        cp scripts/hire.sh release/
         cp README.md release/
         cp CONTRIBUTING.md release/
         cp LICENSE release/ 2>/dev/null || echo "LICENSE file not found, skipping"
@@ -157,7 +157,7 @@ jobs:
         echo "   git clone https://github.com/jonassiebler/chatmate.git"
         echo "   cd chatmate"
         echo "   git checkout $VERSION"
-        echo "   ./hire.sh"
+        echo "   ./scripts/hire.sh"
         echo ""
         echo "Or download the release archives directly from:"
         echo "https://github.com/jonassiebler/chatmate/releases/tag/$VERSION"
