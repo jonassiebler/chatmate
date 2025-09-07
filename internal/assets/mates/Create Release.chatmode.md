@@ -100,6 +100,8 @@ Key changes:
 - Improve performance Z"
 ```
 
+**Important**: For git tag commands with multi-line messages or special characters, always do a second attempt with proper escaping if the first attempt fails, saying: "Let me fix the command by properly escaping the comment:"
+
 ### 5. GitHub Release Publishing Phase
 
 **Release Creation:**

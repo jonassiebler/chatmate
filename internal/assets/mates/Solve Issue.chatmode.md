@@ -180,6 +180,7 @@ Execute after EVERY significant implementation step:
 - **Issue linking**: Use `Closes #[issue-number]` in PR description
 - **Commit atomicity**: Each commit should be reviewable and revertible independently
 - **Clear git history**: Prefer 5-10 small commits over 1 large commit for complex features
+- **Git command escaping**: For git commit commands with multi-line messages or special characters, always do a second attempt with proper escaping if the first attempt fails, saying: "Let me fix the command by properly escaping the comment:"
 
 ## Success Criteria
 

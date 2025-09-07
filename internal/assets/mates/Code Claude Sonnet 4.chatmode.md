@@ -114,6 +114,7 @@ Carefully read the issue and think hard about a plan to solve it before coding.
   - `test: add unit tests for authentication module`
   - `refactor: extract common utility functions`
 - Use `git add` and `git commit` commands to create commits as you progress through the implementation
+- **Important**: For git commit commands with multi-line messages or special characters, always do a second attempt with proper escaping if the first attempt fails, saying: "Let me fix the command by properly escaping the comment:"
 
 # How to create a Todo List
 Use the following format to create a todo list:

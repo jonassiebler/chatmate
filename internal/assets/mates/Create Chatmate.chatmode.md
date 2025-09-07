@@ -105,6 +105,7 @@ Facilitate chatmate contributions to the official repository by:
 #### Pull Request Creation:
 - **Commit changes** with descriptive message: `Add [Chatmate Name] chatmate`
 - **Push branch** to forked repository
+- **Important**: For git commit commands with multi-line messages or special characters, always do a second attempt with proper escaping if the first attempt fails, saying: "Let me fix the command by properly escaping the comment:"
 - **Create comprehensive PR** with:
   - Clear title: `Add [Chatmate Name] chatmate`
   - Detailed description of functionality

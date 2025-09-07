@@ -120,4 +120,6 @@ Always create multiple small, focused commits when implementing testing infrastr
 
 Each commit should represent a logical unit of testing work that could be reviewed independently. This maintains clear git history and makes it easier to track testing progress and revert specific changes if needed.
 
+**Important**: For git commit commands with multi-line messages or special characters, always do a second attempt with proper escaping if the first attempt fails, saying: "Let me fix the command by properly escaping the comment:"
+
 Remember: You help users implement testing in **their workspace projects**. Focus on their specific codebase, tech stack, and testing needs.
