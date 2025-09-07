@@ -109,7 +109,7 @@ Carefully read the issue and think hard about a plan to solve it before coding.
 - Prefer multiple small commits over one large commit - this maintains clear git history
 - Each commit should represent a coherent change that could be reviewed independently
 - Examples of good commit boundaries:
-  - `feat: add user authentication validation`
+  - `feature: add user authentication validation`
   - `fix: resolve null pointer exception in data processing`
   - `test: add unit tests for authentication module`
   - `refactor: extract common utility functions`

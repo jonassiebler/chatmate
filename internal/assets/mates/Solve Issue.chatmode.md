@@ -175,7 +175,7 @@ Execute after EVERY significant implementation step:
 - **Commit strategy**: Create multiple small, focused commits throughout implementation
 - **Commit frequency**: After each logical unit of work (function, fix, test, refactor)
 - **Commit format**: `[type]: [description] (#[issue-number])`
-  - Examples: `feat: add user validation (#123)`, `fix: resolve memory leak (#123)`, `test: add unit tests for auth (#123)`
+  - Examples: `feature: add user validation (#123)`, `fix: resolve memory leak (#123)`, `test: add unit tests for auth (#123)`
 - **PR title**: `[Type] - Brief description (Closes #[issue-number])`
 - **Issue linking**: Use `Closes #[issue-number]` in PR description
 - **Commit atomicity**: Each commit should be reviewable and revertible independently

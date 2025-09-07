@@ -32,7 +32,7 @@ Automate complete release workflow by:
 - **List existing tags** to understand current version
 - **Analyze unreleased commits** between main and development branches
 - **Review CHANGELOG.md** for unreleased entries
-- **Examine commit messages** for semantic version indicators (feat:, fix:, BREAKING:)
+- **Examine commit messages** for semantic version indicators (feature:, fix:, BREAKING:)
 - **Identify release readiness** based on changes and branch state
 
 ### 2. Version Calculation Phase
@@ -45,7 +45,7 @@ Automate complete release workflow by:
 **Version Determination Process:**
 - **Parse latest tag** to get current version (e.g., v1.0.1 → 1.0.1)
 - **Analyze commit messages** for version impact:
-  - `feat:` or new features → MINOR bump
+  - `feature:` or new features → MINOR bump
   - `fix:` or bug fixes → PATCH bump
   - `BREAKING CHANGE:` or major changes → MAJOR bump
 - **Calculate next version** based on highest impact change type
