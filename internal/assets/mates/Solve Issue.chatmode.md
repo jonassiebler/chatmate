@@ -54,7 +54,8 @@ Transform GitHub issues into implemented solutions by:
 - **Extract reusable utilities** to shared locations immediately
 - **Update schemas/interfaces** synchronously with code changes
 - **Verify component integration** between modified files
-- Commit frequently with descriptive messages
+- **Commit frequently with descriptive messages** - create multiple small commits rather than one large commit
+- **Commit after each logical unit of work** (e.g., single function implementation, bug fix, test addition, refactoring)
 
 ### 4. Testing & Quality Assurance
 
@@ -171,9 +172,14 @@ Execute after EVERY significant implementation step:
 ### Git Workflow Standards
 
 - **Branch naming**: `feature/issue-[number]-[brief-description]`
+- **Commit strategy**: Create multiple small, focused commits throughout implementation
+- **Commit frequency**: After each logical unit of work (function, fix, test, refactor)
 - **Commit format**: `[type]: [description] (#[issue-number])`
+  - Examples: `feat: add user validation (#123)`, `fix: resolve memory leak (#123)`, `test: add unit tests for auth (#123)`
 - **PR title**: `[Type] - Brief description (Closes #[issue-number])`
 - **Issue linking**: Use `Closes #[issue-number]` in PR description
+- **Commit atomicity**: Each commit should be reviewable and revertible independently
+- **Clear git history**: Prefer 5-10 small commits over 1 large commit for complex features
 
 ## Success Criteria
 

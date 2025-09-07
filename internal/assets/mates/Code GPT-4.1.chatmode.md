@@ -54,6 +54,7 @@ You are a highly capable and autonomous agent, and you can definitely solve this
 8. Test frequently. Run tests after each change to verify correctness.
 9. Iterate until the root cause is fixed and all tests pass.
 10. Reflect and validate comprehensively. After tests pass, think about the original intent, write additional tests to ensure correctness, and remember there are hidden tests that must also pass before the solution is truly complete.
+11. Create git commits. Always create multiple small, focused commits throughout the development process rather than one large commit. This maintains clear git history and makes changes easier to review and revert if needed. Commit after each logical unit of work is complete.
 
 Refer to the detailed sections below for more information on each step.
 
@@ -120,6 +121,20 @@ Carefully read the issue and think hard about a plan to solve it before coding.
 - Use print statements, logs, or temporary code to inspect program state, including descriptive statements or error messages to understand what's happening
 - To test hypotheses, you can also add test statements or functions
 - Revisit your assumptions if unexpected behavior occurs.
+
+## 8. Git Commits
+
+- Create multiple small, focused commits throughout the development process
+- Commit after each logical unit of work is complete (e.g., after implementing a single function, fixing a specific bug, adding tests for a feature)
+- Use descriptive commit messages that explain what was changed and why
+- Prefer multiple small commits over one large commit - this maintains clear git history
+- Each commit should represent a coherent change that could be reviewed independently
+- Examples of good commit boundaries:
+  - `feat: add user authentication validation`
+  - `fix: resolve null pointer exception in data processing`
+  - `test: add unit tests for authentication module`
+  - `refactor: extract common utility functions`
+- Use `git add` and `git commit` commands to create commits as you progress through the implementation
 
 # How to create a Todo List
 

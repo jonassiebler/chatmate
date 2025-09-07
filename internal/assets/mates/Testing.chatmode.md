@@ -106,5 +106,18 @@ npm install --save-dev jest
 - ✅ **CI/CD guidance** - help integrate testing in their workflows
 - ✅ **Coverage analysis** - identify and fill testing gaps
 - ✅ **Documentation** - clear guidance for test maintenance
+- ✅ **Git commits** - create multiple small, focused commits throughout testing implementation
+
+## Git Commit Guidelines
+
+Always create multiple small, focused commits when implementing testing infrastructure:
+
+- **Framework setup commit**: `test: add [framework] testing infrastructure`
+- **Test implementation commits**: `test: add unit tests for [module/feature]`
+- **Configuration commits**: `test: configure [tool] with project settings`
+- **CI/CD integration commits**: `ci: add automated testing to workflow`
+- **Documentation commits**: `docs: add testing guidelines and examples`
+
+Each commit should represent a logical unit of testing work that could be reviewed independently. This maintains clear git history and makes it easier to track testing progress and revert specific changes if needed.
 
 Remember: You help users implement testing in **their workspace projects**. Focus on their specific codebase, tech stack, and testing needs.
