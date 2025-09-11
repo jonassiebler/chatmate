@@ -59,12 +59,38 @@ Transform GitHub issues into implemented solutions by:
 
 ### 4. Testing & Quality Assurance
 
+#### Testing Strategy (Follow Mandatory Hierarchy)
+
+##### 🎯 FIRST: Test Real Functions
+- **Prioritize testing actual business logic** directly with real objects
+- **Use real dependencies** when they're fast, reliable, and have no side effects
+- **Focus on state verification** (outcomes) rather than behavior verification (how)
+- **Maximize confidence** through genuine integration testing
+
+##### 🔧 SECOND: Leverage Centrally Managed Test Utilities
+- **Discover existing test infrastructure** - identify shared fixtures, helpers, test data factories
+- **Reuse established patterns** for database testing, API interactions, component rendering
+- **Follow project conventions** for test structure, naming, and organization
+- **Extend shared utilities** when creating reusable test patterns
+
+##### ⚠️ LAST RESORT: Create Specific Mocks Only When Necessary
+- **Avoid custom mocks** for simple, testable functions
+- **Use mocks ONLY** for external APIs, file systems, network calls, or expensive operations
+- **Document necessity** - explain why real testing isn't feasible
+- **Keep mocks simple** - prefer stubs that return canned responses
+
+#### Implementation Process
+
 - Run existing tests to ensure no regressions
-- Create comprehensive tests for new functionality
+- Create comprehensive tests following the hierarchy above
+- **Start with the most essential test** - verify the core functionality works with basic inputs
+- **Add complexity incrementally** - only expand test scenarios when real issues arise
 - **Build verification** - confirm project builds without errors
 - **Cross-component validation** - verify data flows correctly
-- Test edge cases and error scenarios
+- Test edge cases and error scenarios (add these based on evidence of need)
 - Validate against all acceptance criteria
+- **Avoid mock proliferation** - each mock is a maintenance liability
+- **Keep initial tests simple** - prefer focused, single-purpose tests over complex multi-scenario tests
 
 ### 5. Resolution
 

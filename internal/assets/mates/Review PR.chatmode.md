@@ -90,10 +90,45 @@ Evaluate across critical quality dimensions:
 
 #### Testing (Weight: 15%)
 
+##### Testing Strategy Quality Assessment
+
+###### 🎯 Real Function Testing (Highest Priority)
+- Verify tests focus on actual business logic with real objects
+- Check for state verification (outcomes) rather than behavior verification (implementation details)
+- Ensure tests use real collaborators when practical (fast, reliable, no side effects)
+- Evaluate if tests provide genuine confidence through real integration
+
+###### 🔧 Centrally Managed Test Utilities (Good Practice)
+- Assess reuse of shared test fixtures, helpers, and standardized test doubles
+- Verify consistency with established project testing patterns
+- Check for proper use of shared test data factories and configuration utilities
+- Validate adherence to project testing conventions
+
+###### ⚠️ Specific Mock Usage (Flag for Review)
+- **RED FLAG**: Excessive custom mocks for simple, testable functions
+- **ACCEPTABLE**: Mocks only for external APIs, file systems, expensive operations
+- **REQUIREMENT**: Documentation justifying why real testing isn't feasible
+- **MAINTENANCE RISK**: Complex behavior-verification mocks that couple to implementation
+
+##### Traditional Testing Quality Checks
 - Test coverage for new and modified code
 - Test quality and edge case coverage
 - Missing test scenarios and failure modes
 - Integration testing needs and coverage
+
+##### Testing Anti-Patterns to Flag
+
+###### High-Risk Mock Patterns
+- Mocking simple, pure functions that could be tested directly
+- Complex mock setups that replicate business logic
+- Behavior verification when state verification would suffice
+- Mocks that require frequent updates when implementation changes
+
+###### Missing Test Categories
+- No tests for new functionality (blocking issue)
+- Insufficient edge case coverage
+- Missing error scenario testing
+- Lack of integration testing for component interactions
 
 #### Architecture (Weight: 10%)
 
@@ -217,11 +252,34 @@ Post comprehensive review comment to PR:
 
 #### Testing Red Flags
 
+##### Critical Testing Issues (Blocking)
 - No tests for new functionality
+- All tests failing or broken
+- Tests that break on every code change (over-mocked, implementation-coupled)
+
+##### High-Risk Testing Patterns (Require Justification)
+- **Excessive mocking**: Custom mocks for simple, pure functions that could be tested directly
+- **Mock complexity**: Complex behavior-verification mocks that replicate business logic
+- **Implementation coupling**: Tests that break when refactoring without changing external behavior
+- **Missing real testing**: No evidence of attempting to test actual functions before mocking
+- **Over-engineered initial tests**: Complex test setups for new features instead of starting with basic functionality tests
+
+##### Medium-Risk Testing Issues (Should Address)
 - Missing edge case coverage
 - Flaky or unreliable tests
 - Insufficient integration test coverage
 - No negative test cases
+- Poor test organization or naming
+- Tests that duplicate coverage without adding value
+
+##### Testing Quality Indicators to Reward
+- Tests that use real objects and verify actual outcomes
+- **Simple, focused tests** that start with basic functionality before adding complexity
+- **Incremental test growth** - evidence of starting simple and adding edge cases based on need
+- Proper reuse of centrally managed test utilities
+- Clear documentation of why mocks are necessary (external APIs, etc.)
+- Comprehensive edge case coverage with real function testing
+- Integration tests that verify real component interactions
 
 #### Architecture Red Flags
 

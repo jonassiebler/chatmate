@@ -97,13 +97,32 @@ Transform completed feature branches into merge-ready pull requests targeting th
 
 ### 6. Testing & Quality Assurance Phase ⚠️ CRITICAL
 
-- **Analyze existing test framework** - examine test architecture, runners, and configuration before proceeding
-- **Study centrally managed test utilities** - identify shared mocks, fixtures, helpers, and setup patterns
-- **Understand project testing conventions** - learn established patterns and naming conventions
+#### Testing Strategy (Follow Mandatory Hierarchy)
+
+##### 🎯 FIRST: Test Real Functions
+- **Prioritize testing actual business logic** with real objects and dependencies
+- **Focus on state verification** (outcomes) rather than behavior verification (implementation)
+- **Use real collaborators** when they're fast, reliable, and don't have side effects
+- **Maximize confidence** through genuine integration of real components
+
+##### 🔧 SECOND: Leverage Centrally Managed Test Utilities
+- **Study centrally managed test utilities** - identify shared fixtures, helpers, and standardized test doubles
+- **Reuse established test infrastructure** - leverage existing setup/teardown, utilities, and configuration patterns
+- **Follow project testing conventions** - understand established patterns and naming conventions
+- **Use shared test data factories** instead of custom mocks when real objects are impractical
+
+##### ⚠️ LAST RESORT: Create Specific Mocks Only When Necessary
+- **Avoid custom mocks** unless testing external APIs, file systems, or expensive operations
+- **Justify each mock** - document why real testing isn't possible
+- **Maintain mock accuracy** - ensure mocks stay synchronized with real implementations
+- **Prefer simple stubs** over complex behavior-verification mocks
+
+#### Quality Validation Process
+
 - **Run complete test suite** to verify no regressions: `npm test` or equivalent
 - **Analyze test failures** if any occur - understand root cause and fix before proceeding
 - **Identify untested changes** - any new functionality without corresponding tests
-- **Create missing tests** using established framework patterns and shared utilities (see next phase)
+- **Create missing tests** following the testing hierarchy above
 - **Validate test coverage** - ensure adequate coverage for all new code paths
 - **Run build process** to ensure no compilation errors
 - **Execute linting and formatting** checks
@@ -115,22 +134,47 @@ Transform completed feature branches into merge-ready pull requests targeting th
 
 ### 7. Test Creation Requirements Phase ⚠️ MANDATORY
 
+#### Pre-Test Analysis
 - **Analyze existing test framework** - deeply examine current testing architecture and patterns
-- **Identify centrally managed test utilities** - find shared functions, mocks, fixtures, and helpers
-- **Evaluate reusable test components** - discover existing test setup, teardown, and configuration utilities
+- **Discover centrally managed utilities** - identify shared mocks, fixtures, helpers, and configuration patterns
+- **Map reusable test components** - find existing test setup, teardown, and shared utilities
 - **Study established testing patterns** - understand project-specific testing conventions and best practices
-- **Map testing infrastructure** - identify test runners, assertion libraries, mocking frameworks, and utilities
-- **Scan for untested code** - identify any new functions, components, or features without tests
-- **Reuse existing test utilities** - leverage shared mocks, fixtures, helper functions, and setup patterns
-- **Create unit tests** using established patterns and centrally managed utilities
-- **Add component tests** following project conventions (React Testing Library, etc.) with shared setup
-- **Write integration tests** reusing existing test data, mocks, and configuration patterns
-- **Include edge case testing** - null/undefined values, empty arrays, error conditions using shared utilities
-- **Test user interactions** leveraging existing interaction helpers and shared test patterns
-- **Validate error handling** using established error testing utilities and mock patterns
-- **Maintain consistency** - ensure new tests follow existing naming conventions and structure
-- **Document test rationale** - explain what each test validates and why it's important
+
+#### Test Implementation Following Hierarchy
+
+##### 🎯 PRIMARY: Real Function Testing
+- **Test actual business logic directly** using real objects when practical
+- **Create unit tests** that validate real function behavior and outcomes
+- **Use real dependencies** for fast, reliable collaborators (pure functions, local data structures)
+- **Focus on state verification** - assert on results, not on how they were achieved
+
+##### 🔧 SECONDARY: Shared Test Infrastructure
+- **Leverage existing test utilities** - reuse shared data factories, fixtures, and helper functions
+- **Use established test patterns** for database testing, API mocking, and component rendering
+- **Follow project conventions** for test structure, naming, and organization
+- **Extend centrally managed utilities** when new shared patterns emerge
+
+##### ⚠️ LAST RESORT: Custom Test Doubles
+- **Create specific mocks ONLY** for external services, file operations, or expensive computations
+- **Document necessity** - explain why real testing isn't feasible
+- **Keep mocks simple** - prefer stubs that return canned responses over complex behavior verification
+- **Plan maintenance** - ensure mocks will be updated when real implementations change
+
+#### Test Categories (In Priority Order)
+- **Unit tests** - real function testing with minimal dependencies
+- **Component tests** - using shared rendering utilities and real props/state
+- **Integration tests** - testing real component interactions with shared test infrastructure
+- **Edge case testing** - null/undefined values, empty arrays, error conditions
+- **Error handling validation** - using established error testing utilities
+
+#### Quality Requirements
 - **NEVER create PR without tests** - testing is a blocking requirement for all new functionality
+- **Start with essential tests first** - begin with the simplest tests that verify core functionality works
+- **Add complexity incrementally** - only expand test coverage when real issues are discovered
+- **Prefer simple, focused tests** - one clear assertion per test rather than complex multi-scenario tests
+- **Maintain test-to-code ratio** - aim for comprehensive coverage without excessive mock maintenance
+- **Document test rationale** - explain what each test validates and why it's important
+- **Ensure all tests pass** - zero tolerance for failing tests
 
 
 ### 8. Issue Completion Assessment Phase
