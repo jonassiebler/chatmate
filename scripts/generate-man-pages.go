@@ -129,10 +129,10 @@ Chatmates are specialized AI agents that bring expertise in specific areas:
   chatmate status
   
   # Install specific chatmates
-  chatmate hire "Solve Issue" "Testing"
+  chatmate hire "Chatmate: Solve Issue" "Chatmate: Testing"
   
   # Remove chatmates you don't need
-  chatmate uninstall "Create PR"`,
+  chatmate uninstall "Chatmate: Create PR"`,
 		Example: `  # Install all available chatmates (recommended for new users)
   chatmate hire
   
@@ -143,10 +143,10 @@ Chatmates are specialized AI agents that bring expertise in specific areas:
   chatmate status
   
   # Install only specific chatmates
-  chatmate hire "Solve Issue" "Code Review" "Testing"
+  chatmate hire "Chatmate: Solve Issue" "Chatmate: Testing"
   
   # Remove specific chatmates
-  chatmate uninstall "Create PR" "Merge PR"
+  chatmate uninstall "Chatmate: Create PR" "Chatmate: Merge PR"
   
   # Force reinstall all chatmates (useful after updates)
   chatmate hire --force
@@ -167,11 +167,11 @@ Chatmates are specialized AI agents that bring expertise in specific areas:
 • Force reinstall to update existing chatmates
 
 📦 Available Chatmates Include:
-• Solve Issue: Systematic debugging and problem resolution
-• Code Review: Expert code analysis and improvement suggestions
-• Testing: Comprehensive test generation and debugging
-• Create PR: Pull request creation and management
-• Documentation: Technical writing and API documentation
+• Chatmate: Solve Issue: Systematic debugging and problem resolution
+• Chatmate: Review PR: Expert code analysis and improvement suggestions
+• Chatmate: Testing: Comprehensive test generation and debugging
+• Chatmate: Create PR: Pull request creation and management
+• Chatmate: Create Issue: GitHub issue creation and management
 
 🔧 Installation Process:
 1. Validates VS Code installation and prompts directory
@@ -187,16 +187,16 @@ Chatmates are specialized AI agents that bring expertise in specific areas:
   chatmate hire
   
   # Install specific chatmates by name (preferred method)
-  chatmate hire "Solve Issue" "Code Review" "Testing"
+  chatmate hire "Chatmate: Solve Issue" "Chatmate: Review PR" "Chatmate: Testing"
   
   # Install specific chatmates using flags (alternative method)
-  chatmate hire --specific "Solve Issue" --specific "Testing"
+  chatmate hire --specific "Chatmate: Solve Issue" --specific "Chatmate: Testing"
   
   # Force reinstall all chatmates (useful after updates)
   chatmate hire --force
   
   # Force reinstall specific chatmates
-  chatmate hire --force "Solve Issue" "Testing"`,
+  chatmate hire --force "Chatmate: Solve Issue" "Chatmate: Testing"`,
 	}
 
 	listCmd := &cobra.Command{
@@ -298,17 +298,17 @@ VS Code integration, and system configuration.
 • Uninstalling doesn't affect your VS Code settings or other extensions
 • You can reinstall anytime without losing functionality`,
 		Example: `  # Uninstall a specific chatmate
-  chatmate uninstall "Solve Issue"
+  chatmate uninstall "Chatmate: Solve Issue"
   
   # Uninstall multiple chatmates at once
-  chatmate uninstall "Create PR" "Merge PR" "Review PR"
+  chatmate uninstall "Chatmate: Create PR" "Chatmate: Merge PR" "Chatmate: Review PR"
   
   # Uninstall all chatmates (nuclear option)
   chatmate uninstall --all
   
   # Common workflow: check what's installed, then remove unused ones
   chatmate list --installed
-  chatmate uninstall "Documentation" "Optimize Issues"`,
+  chatmate uninstall "Chatmate: Create Release" "Chatmate: Optimize Issues"`,
 	}
 
 	configCmd := &cobra.Command{

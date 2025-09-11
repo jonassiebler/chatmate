@@ -265,8 +265,8 @@ func FileExists(filename string) bool {
 //
 // Example:
 //
-//	name := GetChatmateNameFromFilename("Code Claude Sonnet 4.chatmode.md")
-//	fmt.Println(name) // Output: Code Claude Sonnet 4
+//	name := GetChatmateNameFromFilename("Chatmate: Code Claude Sonnet 4.chatmode.md")
+//	fmt.Println(name) // Output: Chatmate: Code Claude Sonnet 4
 //
 //	name = GetChatmateNameFromFilename("regular-file.txt")
 //	fmt.Println(name) // Output: regular-file.txt
@@ -292,7 +292,7 @@ func GetChatmateNameFromFilename(filename string) string {
 //
 // Example:
 //
-//	if IsChatmateFile("Code Claude Sonnet 4.chatmode.md") {
+//	if IsChatmateFile("Chatmate: Code Claude Sonnet 4.chatmode.md") {
 //		fmt.Println("This is a chatmate file")
 //	}
 //

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Renamed all chatmate files with "Chatmate:" prefix to prevent conflicts with user-created modes (#12)
+- Added safety prompts to Create Chatmode and Create Chatmate modes for publication intent and naming preferences
+
 ## [1.0.2] - 2025-09-01
 
 ### Added
