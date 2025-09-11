@@ -29,11 +29,11 @@ cd chatmate && go build -o chatmate .
 
 | Chatmate | Purpose | Example |
 |----------|---------|---------|
-| **Solve Issue** 🐛 | Debug systematically | `My React component won't render` |
+| **Chatmate - Solve Issue** 🐛 | Debug systematically | `My React component won't render` |
 | **Code Review** 👁️ | Analyze & improve code | `Check this authentication logic` |
-| **Testing** 🧪 | Generate & debug tests | `Unit tests for this service` |
-| **Create PR** 📝 | Pull request creation | `PR for new auth feature` |
-| **Create Issue** 🎯 | GitHub issue creation | `Login fails on mobile` |
+| **Chatmate - Testing** 🧪 | Generate & debug tests | `Unit tests for this service` |
+| **Chatmate - Create PR** 📝 | Pull request creation | `PR for new auth feature` |
+| **Chatmate - Create Issue** 🎯 | GitHub issue creation | `Login fails on mobile` |
 
 Run `chatmate list` for all available agents.
 
@@ -79,7 +79,7 @@ cd chatmate && ./hire.sh
 4. Submit PR to `dev` branch
 
 **Creating Chatmates:**
-1. Use `Create Chatmode` agent
+1. Use `Chatmate - Create Chatmode` agent
 2. Add `.chatmode.md` to `internal/assets/mates/`
 3. Test with `chatmate hire`
 4. Submit PR

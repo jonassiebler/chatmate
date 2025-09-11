@@ -197,8 +197,8 @@ func TestGetChatmateNameFromFilename(t *testing.T) {
 	}{
 		{
 			name:     "standard chatmode file",
-			input:    "Code Claude Sonnet 4.chatmode.md",
-			expected: "Code Claude Sonnet 4",
+			input:    "Chatmate - Code Claude Sonnet 4.chatmode.md",
+			expected: "Chatmate - Code Claude Sonnet 4",
 		},
 		{
 			name:     "file with spaces",
