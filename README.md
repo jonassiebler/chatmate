@@ -27,6 +27,12 @@ cd chatmate && go build -o chatmate .
 
 ## 🤖 Available Chatmates
 
+> **💡 Version Information**: Chatmates are available in two versions:
+> - **Original versions**: Comprehensive, detailed instructions with extensive examples
+> - **v2 versions (Optimized)**: Streamlined, language-agnostic with 3-Domain Safety Paradigm (Implementation-Testing-Documentation validation)
+>
+> Choose based on preference: comprehensive guidance (original) vs. efficient execution (v2).
+
 | Chatmate | Purpose | Example |
 |----------|---------|---------|
 | **Chatmate - Solve Issue** 🐛 | Debug systematically | `My React component won't render` |

@@ -287,6 +287,12 @@ All commands support these global options:
 
 ## Chatmate Catalog
 
+> **💡 Chatmate Versions**: All chatmates are available in two versions:
+> - **Original versions**: Comprehensive, detailed instructions with extensive examples and language-specific guidance
+> - **v2 versions (Optimized)**: Streamlined, language-agnostic with 3-Domain Safety Paradigm for Implementation-Testing-Documentation validation
+>
+> Select the version that matches your workflow preference: detailed guidance (original) or efficient execution (v2).
+
 ### Development & Debugging
 
 #### **Solve Issue** 🐛

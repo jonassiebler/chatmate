@@ -23,6 +23,8 @@ go build -o chatmate .
 
 ## 🤖 Essential Chatmates
 
+> **💡 Version Choice**: Chatmates come in original (comprehensive) and v2 (optimized) versions. v2 versions feature streamlined instructions and 3-Domain Safety Paradigm validation.
+
 | Type @ in Copilot Chat | What it does |
 |------------------------|--------------|
 | `@Solve Issue` | Debug and fix problems |
