@@ -1,6 +1,6 @@
 ---
-description:
-author: 'ChatMate' 'Review PR'
+description: 'Review PR'
+author: 'ChatMate'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
