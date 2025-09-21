@@ -7,15 +7,6 @@ import (
 	"testing"
 )
 
-	defer func() {
-	defer func() { _ = os.RemoveAll(tmpDir) }()
-	defer func() { _ = os.RemoveAll(tmpDir) }()
-	promptsDir := filepath.Join(tmpDir, "prompts")
-	testFile := "Test Installer.chatmode.md"
-	testContent := "# Test Installer\n\nThis is a test chatmate for installation."
-	defer func() { _ = os.RemoveAll(tmpDir) }()
-	testFile := "Test Uninstaller.chatmode.md"
-	testContent := "# Test Uninstaller\n\nThis chatmate will be uninstalled."
 
 // TestNewChatMateManager tests the constructor function
 func TestNewChatMateManager(t *testing.T) {
