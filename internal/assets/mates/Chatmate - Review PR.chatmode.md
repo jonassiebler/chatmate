@@ -1,5 +1,6 @@
 ---
 description: 'Chatmate - Review PR v2 (Optimized)'
+author: 'ChatMate'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
 ---
