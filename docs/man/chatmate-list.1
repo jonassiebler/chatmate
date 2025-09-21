@@ -1,0 +1,72 @@
+.nh
+.TH "chatmate-list" "1" "Aug 2025" "ChatMate CLI" "ChatMate Manual"
+
+.SH NAME
+chatmate-list - List available and installed chatmate agents
+
+
+.SH SYNOPSIS
+\fBchatmate list [flags]\fP
+
+
+.SH DESCRIPTION
+Display comprehensive information about available and installed chatmate agents.
+
+.PP
+📋 What You'll See:
+• Available chatmates with descriptions and specializations
+.br
+• Installation status (✅ installed, ❌ not installed)
+• Summary statistics of your chatmate collection
+
+.PP
+🎯 Filter Options:
+• Show only available chatmates (--available)
+• Show only installed chatmates (--installed)
+.br
+• Default: Show both available and installed with status indicators
+
+.PP
+💡 Use Cases:
+• Discover new chatmates to install
+• Check installation status of specific chatmates
+• Get overview of your current chatmate setup
+• Find chatmates by their specialization areas
+
+
+.SH OPTIONS
+\fB-a\fP, \fB--available\fP[=false]
+	Show only available chatmates
+
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for list
+
+.PP
+\fB-i\fP, \fB--installed\fP[=false]
+	Show only installed chatmates
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+\fB-v\fP, \fB--verbose\fP[=false]
+	Verbose output
+
+
+.SH EXAMPLE
+.EX
+  # List all chatmates with installation status (default)
+  chatmate list
+  
+  # Show only available chatmates (not yet installed)
+  chatmate list --available
+  
+  # Show only installed chatmates
+  chatmate list --installed
+  
+  # Combine with other commands for workflows
+  chatmate list --available | grep "Testing"  # Find testing-related chatmates
+.EE
+
+
+.SH SEE ALSO
+\fBchatmate(1)\fP

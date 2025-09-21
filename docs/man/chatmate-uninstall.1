@@ -1,0 +1,72 @@
+.nh
+.TH "chatmate-uninstall" "1" "Aug 2025" "ChatMate CLI" "ChatMate Manual"
+
+.SH NAME
+chatmate-uninstall - Uninstall chatmate agents from VS Code
+
+
+.SH SYNOPSIS
+\fBchatmate uninstall [chatmate names...] [flags]\fP
+
+
+.SH DESCRIPTION
+Remove chatmate agents from your VS Code Copilot Chat setup.
+
+.PP
+🗑️  Uninstall Options:
+• Remove specific chatmates by name
+• Remove all installed chatmates at once
+• Safe removal with confirmation and status reporting
+
+.PP
+⚠️  What Happens:
+• Chatmate files are removed from VS Code prompts directory
+• Existing chat history and conversations are preserved
+• You can always reinstall chatmates later with 'chatmate hire'
+
+.PP
+🔄 Common Scenarios:
+• Remove chatmates you don't use to reduce clutter
+• Clean up before major updates or troubleshooting
+• Customize your chatmate collection for specific projects
+
+.PP
+💡 Pro Tips:
+• Use 'chatmate list --installed' first to see what's available to remove
+• Uninstalling doesn't affect your VS Code settings or other extensions
+• You can reinstall anytime without losing functionality
+
+
+.SH OPTIONS
+\fB--all\fP[=false]
+	Uninstall all chatmates
+
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for uninstall
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+\fB-v\fP, \fB--verbose\fP[=false]
+	Verbose output
+
+
+.SH EXAMPLE
+.EX
+  # Uninstall a specific chatmate
+  chatmate uninstall "Solve Issue"
+  
+  # Uninstall multiple chatmates at once
+  chatmate uninstall "Create PR" "Merge PR" "Review PR"
+  
+  # Uninstall all chatmates (nuclear option)
+  chatmate uninstall --all
+  
+  # Common workflow: check what's installed, then remove unused ones
+  chatmate list --installed
+  chatmate uninstall "Documentation" "Optimize Issues"
+.EE
+
+
+.SH SEE ALSO
+\fBchatmate(1)\fP

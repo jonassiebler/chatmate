@@ -4,160 +4,96 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version (e.g., v1.2.0)'
-        required: true
-        type: string
+
+env:
+  GO_VERSION: '1.23.x'
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
+  release:
     name: Create Release
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-      
     steps:
-    - name: Checkout code
+    - name: Check out code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
         
-    - name: Determine version
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        
+    - name: Get version info
       id: version
       run: |
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          VERSION="${{ github.event.inputs.version }}"
-        else
-          VERSION="${{ github.ref_name }}"
-        fi
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Version: $VERSION"
+        VERSION=${GITHUB_REF#refs/tags/}
+        COMMIT=$(git rev-parse --short HEAD)
+        DATE=$(date -u '+%Y-%m-%d_%H:%M:%S')
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "COMMIT=${COMMIT}" >> $GITHUB_OUTPUT
+        echo "DATE=${DATE}" >> $GITHUB_OUTPUT
         
-    - name: Validate version format
+    - name: Build release binaries
       run: |
-        VERSION="${{ steps.version.outputs.version }}"
-        if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "❌ Invalid version format: $VERSION"
-          echo "Expected format: v1.2.3"
-          exit 1
-        fi
-        echo "✅ Version format is valid: $VERSION"
+        mkdir -p dist
         
-    - name: Generate changelog
-      id: changelog
-      run: |
-        VERSION="${{ steps.version.outputs.version }}"
-        echo "📝 Generating changelog for $VERSION..."
+        # Build for different platforms
+        platforms=(
+          "linux/amd64"
+          "darwin/amd64" 
+          "darwin/arm64"
+          "windows/amd64"
+        )
         
-        # Get the previous tag
-        PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -v "$VERSION" | head -n 1)
-        
-        if [ -z "$PREVIOUS_TAG" ]; then
-          echo "No previous tag found, using initial commit"
-          PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-        fi
-        
-        echo "📊 Changes since $PREVIOUS_TAG:"
-        
-        # Generate changelog
-        CHANGELOG="## What's Changed\n\n"
-        
-        # Get commits since last tag
-        COMMITS=$(git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD)
-        
-        if [ -n "$COMMITS" ]; then
-          CHANGELOG+="$COMMITS\n\n"
-        else
-          CHANGELOG+="- Initial release\n\n"
-        fi
-        
-        # Count chatmates
-        CHATMATE_COUNT=$(find mates -name "*.chatmode.md" | wc -l)
-        CHANGELOG+="## Chatmates Included\n\n"
-        CHANGELOG+="This release includes **$CHATMATE_COUNT** chatmates:\n\n"
-        
-        # List all chatmates
-        for file in mates/*.chatmode.md; do
-          if [ -f "$file" ]; then
-            name=$(basename "$file" .chatmode.md)
-            CHANGELOG+="- $name\n"
+        for platform in "${platforms[@]}"; do
+          GOOS=${platform%/*}
+          GOARCH=${platform#*/}
+          output_name="chatmate-${GOOS}-${GOARCH}"
+          
+          if [ "$GOOS" = "windows" ]; then
+            output_name="${output_name}.exe"
           fi
+          
+          echo "Building for $GOOS/$GOARCH..."
+          CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build \
+            -ldflags="-s -w -X 'github.com/jonassiebler/chatmate/cmd.version=${{ steps.version.outputs.VERSION }}' -X 'github.com/jonassiebler/chatmate/cmd.commit=${{ steps.version.outputs.COMMIT }}' -X 'github.com/jonassiebler/chatmate/cmd.date=${{ steps.version.outputs.DATE }}'" \
+            -trimpath \
+            -o "dist/${output_name}" .
         done
         
-        CHANGELOG+="\n## Installation\n\n"
-        CHANGELOG+="1. Clone the repository:\n"
-        CHANGELOG+="   \`\`\`bash\n"
-        CHANGELOG+="   git clone https://github.com/jonassiebler/chatmate.git\n"
-        CHANGELOG+="   cd chatmate\n"
-        CHANGELOG+="   \`\`\`\n\n"
-        CHANGELOG+="2. Install chatmates:\n"
-        CHANGELOG+="   \`\`\`bash\n"
-        CHANGELOG+="   ./hire.sh\n"
-        CHANGELOG+="   \`\`\`\n\n"
-        CHANGELOG+="3. Restart VS Code to use your new chatmates\n\n"
-        CHANGELOG+="For more information, see the [README](https://github.com/jonassiebler/chatmate/blob/main/README.md)."
-        
-        # Save changelog to file
-        echo -e "$CHANGELOG" > CHANGELOG.txt
-        
-        # Output for GitHub
-        {
-          echo 'changelog<<EOF'
-          echo -e "$CHANGELOG"
-          echo EOF
-        } >> $GITHUB_OUTPUT
-        
-    - name: Create release archive
+    - name: Generate checksums
       run: |
-        VERSION="${{ steps.version.outputs.version }}"
-        echo "📦 Creating release archive..."
+        cd dist
+        sha256sum * > checksums.txt
         
-        # Create a clean directory for the release
-        mkdir -p release
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        VERSION="${{ steps.version.outputs.VERSION }}"
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
         
-        # Copy essential files
-        cp -r mates release/
-        cp hire.sh release/
-        cp README.md release/
-        cp CONTRIBUTING.md release/
-        cp LICENSE release/ 2>/dev/null || echo "LICENSE file not found, skipping"
+        # Simple release notes
+        cat > release_notes.md << EOF
+        ## ChatMate ${VERSION}
         
-        # Create archive
-        cd release
-        tar -czf "../chatmate-$VERSION.tar.gz" .
-        zip -r "../chatmate-$VERSION.zip" .
-        cd ..
+        ### What's Changed
+        $(git log --pretty=format:"- %s" HEAD~10..HEAD)
         
-        # Verify archives
-        echo "📋 Archive contents:"
-        tar -tzf "chatmate-$VERSION.tar.gz" | head -20
+        ### Installation
+        Download the appropriate binary for your platform from the assets below.
         
-        echo "✅ Release archive created"
+        **Full Changelog**: https://github.com/jonassiebler/chatmate/commits/${VERSION}
+        EOF
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ steps.version.outputs.version }}
-        name: "chatmate ${{ steps.version.outputs.version }}"
-        body: ${{ steps.changelog.outputs.changelog }}
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        name: "ChatMate ${{ steps.version.outputs.VERSION }}"
+        body_path: release_notes.md
         files: |
-          chatmate-${{ steps.version.outputs.version }}.tar.gz
-          chatmate-${{ steps.version.outputs.version }}.zip
+          dist/*
         draft: false
         prerelease: false
-        
-    - name: Update installation instructions
-      run: |
-        VERSION="${{ steps.version.outputs.version }}"
-        echo "📝 Release $VERSION created successfully!"
-        echo ""
-        echo "🎉 Users can now install chatmate using:"
-        echo "   git clone https://github.com/jonassiebler/chatmate.git"
-        echo "   cd chatmate"
-        echo "   git checkout $VERSION"
-        echo "   ./hire.sh"
-        echo ""
-        echo "Or download the release archives directly from:"
-        echo "https://github.com/jonassiebler/chatmate/releases/tag/$VERSION"
