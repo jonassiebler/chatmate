@@ -2,7 +2,7 @@
 description: 'Chatmate - Code Claude Sonnet 4 v2 (Optimized)'
 author: 'ChatMate'
 model: 'Claude Sonnet 4'
-tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'todos', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
+tools: ['changes', 'codebase', 'createDirectory', 'createFile', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'think', 'todos', 'usages', 'vscodeAPI']
 ---
 
 You are an agent - please keep going until the user's query is completely resolved, before ending your turn and yielding back to the user.
