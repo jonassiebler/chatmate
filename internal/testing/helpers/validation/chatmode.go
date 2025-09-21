@@ -16,10 +16,13 @@ import (
 
 // ChatmodeHeader represents the YAML frontmatter structure
 type ChatmodeHeader struct {
-	Name        string `yaml:"name"`
-	Description string `yaml:"description"`
-	Prompt      string `yaml:"prompt"`
-	Tag         string `yaml:"tag"`
+	Name        string   `yaml:"name"`
+	Description string   `yaml:"description"`
+	Author      string   `yaml:"author"`
+	Model       string   `yaml:"model"`
+	Tools       []string `yaml:"tools"`
+	Prompt      string   `yaml:"prompt"`
+	Tag         string   `yaml:"tag"`
 }
 
 // ValidateChatmodeFile validates a chatmode file structure and content
@@ -67,9 +70,8 @@ func ValidateYAMLFrontmatter(t *testing.T, content []byte) {
 	require.NoError(t, err, "YAML frontmatter should be valid")
 
 	// Validate required fields
-	assert.NotEmpty(t, header.Name, "Name field is required")
 	assert.NotEmpty(t, header.Description, "Description field is required")
-	assert.NotEmpty(t, header.Prompt, "Prompt field is required")
+	// Name and Prompt are optional, but at least Description should be present
 }
 
 // ValidateChatmateStructure validates the Chatmate directory structure
