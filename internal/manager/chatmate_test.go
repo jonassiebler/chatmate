@@ -184,8 +184,11 @@ func TestChatMateManager_InstallChatmate(t *testing.T) {
 		UseEmbedded: false,
 	}
 
+	// Initialize services
+	cm.installer = NewInstallerService(cm)
+
 	// Test installation
-	err = cm.InstallChatmate(testFile, false)
+	err = cm.Installer().InstallChatmate(testFile, false)
 	if err != nil {
 		t.Fatalf("InstallChatmate failed: %v", err)
 	}
@@ -207,13 +210,13 @@ func TestChatMateManager_InstallChatmate(t *testing.T) {
 	}
 
 	// Test installing already installed file (should skip)
-	err = cm.InstallChatmate(testFile, false)
+	err = cm.Installer().InstallChatmate(testFile, false)
 	if err != nil {
 		t.Fatalf("InstallChatmate failed on already installed file: %v", err)
 	}
 
 	// Test force reinstall
-	err = cm.InstallChatmate(testFile, true)
+	err = cm.Installer().InstallChatmate(testFile, true)
 	if err != nil {
 		t.Fatalf("InstallChatmate failed with force flag: %v", err)
 	}
@@ -249,13 +252,16 @@ func TestChatMateManager_UninstallChatmate(t *testing.T) {
 		PromptsDir: promptsDir,
 	}
 
+	// Initialize services
+	cm.uninstaller = NewUninstallerService(cm)
+
 	// Verify file exists before uninstall
 	if _, err := os.Stat(installedPath); os.IsNotExist(err) {
 		t.Fatalf("Test setup failed: installed file doesn't exist")
 	}
 
 	// Test uninstallation
-	err = cm.UninstallChatmate(testFile)
+	err = cm.Uninstaller().UninstallChatmate(testFile)
 	if err != nil {
 		t.Fatalf("UninstallChatmate failed: %v", err)
 	}
@@ -266,7 +272,7 @@ func TestChatMateManager_UninstallChatmate(t *testing.T) {
 	}
 
 	// Test uninstalling non-existent file (should not error)
-	err = cm.UninstallChatmate("NonExistent.chatmode.md")
+	err = cm.Uninstaller().UninstallChatmate("NonExistent.chatmode.md")
 	if err != nil {
 		t.Fatalf("UninstallChatmate failed on non-existent file: %v", err)
 	}
