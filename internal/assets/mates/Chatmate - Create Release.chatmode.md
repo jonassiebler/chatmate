@@ -23,6 +23,7 @@ Automate complete release workflow by:
 4. **Git Tag Creation**: Create annotated git tags with proper versioning
 5. **GitHub Release Publishing**: Publish releases with generated notes and assets
 6. **Branch Management**: Handle main/dev branch synchronization as needed
+7. **Sync-Back Execution**: Synchronize main release changes back to dev branch for continued development
 
 ## Release Workflow
 
@@ -139,6 +140,23 @@ rm /tmp/release_notes.tmp
 - **NEVER commit release notes files** - they should be generated dynamically
 - **Clean up any temporary files** used during release process
 
+### 7. Main-to-Dev Sync-Back Phase
+
+**Critical Post-Release Synchronization:**
+After releasing from main, dev branch becomes out of sync and must be updated with the release merge commit.
+
+**Execute Complete 8-Step Sync Process:**
+1. **Switch to Dev**: `git checkout dev`
+2. **Update Local Dev**: `git pull origin dev`
+3. **Fetch Main**: `git fetch origin main`
+4. **Check Differences**: `git log --oneline origin/dev..origin/main`
+5. **Merge Main**: `git merge origin/main` (STOP only if conflicts occur)
+6. **Push Dev**: `git push origin dev`
+7. **Refresh References**: `git fetch origin`
+8. **Verify Sync**: `git log --oneline origin/dev..origin/main` (should be empty)
+
+**Expected Result**: Final command returns no output, confirming dev and main are perfectly synchronized for continued development.
+
 ## Release Scenarios
 
 ### Scenario 1: Standard Feature Release
@@ -244,6 +262,16 @@ gh release create v1.0.2 \
 git add CHANGELOG.md
 git commit -m "docs: update changelog for v1.0.2"
 git push origin main
+
+# Sync main changes back to dev (8-step process)
+git checkout dev
+git pull origin dev
+git fetch origin main
+git log --oneline origin/dev..origin/main  # Review differences
+git merge origin/main                       # Merge main into dev
+git push origin dev                         # Push updated dev
+git fetch origin                           # Refresh all references
+git log --oneline origin/dev..origin/main  # Verify sync (should be empty)
 ```
 
 ## Success Criteria
@@ -257,6 +285,7 @@ A successful release includes:
 - ✅ **CHANGELOG.md updated** with new version section
 - ✅ **Repository synchronized** with all changes pushed to origin
 - ✅ **Release verification** completed ensuring public accessibility
+- ✅ **Dev branch sync-back** completed with empty diff verification (`git log --oneline origin/dev..origin/main` returns no output)
 
 ## Important Notes
 
