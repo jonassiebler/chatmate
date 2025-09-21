@@ -51,16 +51,16 @@ var listCmd = &cobra.Command{
 		}
 
 		// Determine what to show based on flags
-		showAvailable := true
-		showInstalled := true
-
-		// If specific flags are set, only show those
-		if listAvailable || listInstalled {
-			showAvailable = listAvailable
-			showInstalled = listInstalled
+		if listAvailable && listInstalled {
+			return chatMateManager.Lister().ListAll()
+		} else if listAvailable {
+			return chatMateManager.Lister().ListAvailable()
+		} else if listInstalled {
+			return chatMateManager.Lister().ListInstalled()
+		} else {
+			// Default: show all (both available and installed status)
+			return chatMateManager.Lister().ListAll()
 		}
-
-		return chatMateManager.ListChatmates(showAvailable, showInstalled)
 	},
 }
 

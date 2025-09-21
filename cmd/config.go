@@ -55,7 +55,7 @@ platform details, and system environment settings.
 
 		// For now, we only support showing config
 		// In the future, we could add config management features
-		chatMateManager.ShowConfig()
+		chatMateManager.Status().ShowConfig()
 		return nil
 	},
 }

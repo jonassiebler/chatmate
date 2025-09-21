@@ -169,7 +169,7 @@ func runFirstTimeTutorial(prompt PromptFunc) error {
 		return nil
 	}
 
-	err = chatMateManager.ShowStatus()
+	err = chatMateManager.Status().ShowStatus()
 	if err != nil {
 		fmt.Printf("❌ Error showing status: %v\n", err)
 		return nil
@@ -196,7 +196,7 @@ func runFirstTimeTutorial(prompt PromptFunc) error {
 		fmt.Println("Running: chatmate hire \"Solve Issue\" \"Code Review\" \"Testing\"")
 		fmt.Println("")
 
-		err = chatMateManager.InstallSpecific([]string{"Solve Issue", "Code Review", "Testing"}, false)
+		err = chatMateManager.Installer().InstallSpecific([]string{"Solve Issue", "Code Review", "Testing"}, false)
 		if err != nil {
 			fmt.Printf("❌ Error installing chatmates: %v\n", err)
 			return nil
@@ -212,7 +212,7 @@ func runFirstTimeTutorial(prompt PromptFunc) error {
 	fmt.Println("")
 
 	fmt.Println("Running: chatmate list --installed")
-	err = chatMateManager.ListChatmates(false, true)
+	err = chatMateManager.Lister().ListInstalled()
 	if err != nil {
 		fmt.Printf("❌ Error listing chatmates: %v\n", err)
 		return nil
@@ -299,7 +299,7 @@ func runDailyDevTutorial(prompt PromptFunc) error {
 		return nil
 	}
 
-	err = chatMateManager.ShowStatus()
+	err = chatMateManager.Status().ShowStatus()
 	if err != nil {
 		fmt.Printf("❌ Error: %v\n", err)
 		return nil
