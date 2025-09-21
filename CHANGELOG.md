@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Renamed all chatmate files with "Chatmate -" prefix to prevent conflicts with user-created modes (#12)
+- Added safety prompts to Create Chatmode and Create Chatmate modes for publication intent and naming preferences
+
 ## [1.0.2] - 2025-09-01
 
 ### Added
-- Create Release chatmate - automated release workflow management (#9)
-- Create Chatmate chatmate for project setup and initialization
+- Chatmate - Create Release chatmate - automated release workflow management (#9)
+- Chatmate - Create Chatmate chatmate for project setup and initialization
 
 ### Improved
 - Documentation with upgrade instructions for Homebrew publishing guide

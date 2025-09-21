@@ -53,7 +53,7 @@ VS Code integration, and system configuration.
 			return fmt.Errorf("failed to initialize ChatMate manager: %w", err)
 		}
 
-		return chatMateManager.ShowStatus()
+		return chatMateManager.Status().ShowStatus()
 	},
 }
 

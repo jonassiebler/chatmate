@@ -19,6 +19,7 @@ func TestGetRootCommandFunction(t *testing.T) {
 	cmd := GetRootCommand()
 	if cmd == nil {
 		t.Error("GetRootCommand returned nil")
+		return
 	}
 	if cmd.Use != "chatmate" {
 		t.Errorf("GetRootCommand returned wrong command: %s", cmd.Use)

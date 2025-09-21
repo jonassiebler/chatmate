@@ -23,6 +23,8 @@ go build -o chatmate .
 
 ## 🤖 Essential Chatmates
 
+> **💡 Optimized Design**: All chatmates feature streamlined instructions with 3-Domain Safety Paradigm validation for reliable, efficient development.
+
 | Type @ in Copilot Chat | What it does |
 |------------------------|--------------|
 | `@Solve Issue` | Debug and fix problems |

@@ -71,12 +71,12 @@ var hireCmd = &cobra.Command{
 
 		if len(specificChatmates) > 0 {
 			fmt.Printf("Installing specific chatmates: %s\n", strings.Join(specificChatmates, ", "))
-			return chatMateManager.InstallSpecific(specificChatmates, hireForce)
+			return chatMateManager.Installer().InstallSpecific(specificChatmates, hireForce)
 		}
 
 		// Install all chatmates
 		fmt.Println("Installing all available chatmates...")
-		return chatMateManager.InstallAll(hireForce)
+		return chatMateManager.Installer().InstallAll(hireForce)
 	},
 }
 

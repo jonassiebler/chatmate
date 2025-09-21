@@ -61,7 +61,7 @@ var uninstallCmd = &cobra.Command{
 				return fmt.Errorf("cannot specify chatmate names when using --all flag")
 			}
 			fmt.Println("Uninstalling all chatmates...")
-			return chatMateManager.UninstallAll()
+			return chatMateManager.Uninstaller().UninstallAll()
 		}
 
 		// Handle specific chatmate uninstall
@@ -70,7 +70,7 @@ var uninstallCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Uninstalling chatmates: %s\n", strings.Join(args, ", "))
-		return chatMateManager.UninstallSpecific(args)
+		return chatMateManager.Uninstaller().UninstallSpecific(args)
 	},
 }
 

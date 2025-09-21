@@ -7,27 +7,31 @@
 //
 // Key Components:
 //   - ChatMateManager: Main service for chatmate operations
-//   - Installation and uninstallation of chatmate files
-//   - System status checking and configuration management
-//   - Integration with VS Code prompts directory
+//   - InstallerService: Handles chatmate installation operations
+//   - UninstallerService: Handles chatmate removal operations
+//   - ListerService: Handles chatmate listing and display
+//   - ValidatorService: Handles validation and status checking
 //
 // Usage Example:
 //
-//	manager, err := manager.NewChatMateManager()
+// manager, err := manager.NewChatMateManager()
+//
 //	if err != nil {
-//	    log.Fatal(err)
+//	   log.Fatal(err)
 //	}
 //
-//	// Install all available chatmates
-//	err = manager.InstallAll(false)
+// // Install all available chatmates
+// err = manager.Installer().InstallAll(false)
+//
 //	if err != nil {
-//	    log.Fatal(err)
+//	   log.Fatal(err)
 //	}
 //
-//	// List installed chatmates
-//	err = manager.ListChatmates(false, true)
+// // List installed chatmates
+// err = manager.Lister().ListInstalled()
+//
 //	if err != nil {
-//	    log.Fatal(err)
+//	   log.Fatal(err)
 //	}
 package manager
 
@@ -35,11 +39,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/jonassiebler/chatmate/internal/assets"
-	"github.com/jonassiebler/chatmate/pkg/security"
 	"github.com/jonassiebler/chatmate/pkg/utils"
 )
 
@@ -49,6 +51,9 @@ import (
 // specialized AI agents (chatmates) that integrate with VS Code Copilot Chat.
 // It manages file operations between the chatmate source directory and the
 // VS Code user prompts directory.
+//
+// The manager uses a service-oriented architecture with dedicated modules for
+// different functionality areas: installation, uninstallation, listing, and validation.
 //
 // Fields:
 //   - ScriptDir: Directory containing the ChatMate executable and resources
@@ -60,6 +65,13 @@ type ChatMateManager struct {
 	MatesDir    string
 	PromptsDir  string
 	UseEmbedded bool
+
+	// Service instances for modular functionality
+	installer   *InstallerService
+	uninstaller *UninstallerService
+	lister      *ListerService
+	validator   *ValidatorService
+	status      *StatusService
 }
 
 // NewChatMateManager creates a new ChatMateManager instance with automatic configuration.
@@ -80,9 +92,10 @@ type ChatMateManager struct {
 //
 // Example:
 //
-//	manager, err := NewChatMateManager()
+// manager, err := NewChatMateManager()
+//
 //	if err != nil {
-//	    return fmt.Errorf("failed to initialize manager: %w", err)
+//	   return fmt.Errorf("failed to initialize manager: %w", err)
 //	}
 func NewChatMateManager() (*ChatMateManager, error) {
 	// Get current working directory (for development) or executable directory (for production)
@@ -120,15 +133,58 @@ func NewChatMateManager() (*ChatMateManager, error) {
 		return nil, fmt.Errorf("failed to get VS Code prompts directory: %w", err)
 	}
 
-	return &ChatMateManager{
+	// Create manager instance
+	manager := &ChatMateManager{
 		ScriptDir:   scriptDir,
 		MatesDir:    matesDir,
 		PromptsDir:  promptsDir,
 		UseEmbedded: useEmbedded,
-	}, nil
+	}
+
+	// Initialize service modules
+	manager.installer = NewInstallerService(manager)
+	manager.uninstaller = NewUninstallerService(manager)
+	manager.lister = NewListerService(manager)
+	manager.validator = NewValidatorService(manager)
+	manager.status = NewStatusService(manager)
+
+	return manager, nil
 }
 
-// GetAvailableChatmates returns all available chatmate files
+// Installer returns the installer service for chatmate installation operations.
+func (cm *ChatMateManager) Installer() *InstallerService {
+	return cm.installer
+}
+
+// Uninstaller returns the uninstaller service for chatmate removal operations.
+func (cm *ChatMateManager) Uninstaller() *UninstallerService {
+	return cm.uninstaller
+}
+
+// Lister returns the lister service for chatmate listing and display operations.
+func (cm *ChatMateManager) Lister() *ListerService {
+	return cm.lister
+}
+
+// Validator returns the validator service for validation and status operations.
+func (cm *ChatMateManager) Validator() *ValidatorService {
+	return cm.validator
+}
+
+// Status returns the status service for status and configuration display operations.
+func (cm *ChatMateManager) Status() *StatusService {
+	return cm.status
+}
+
+// GetAvailableChatmates returns all available chatmate files.
+//
+// This method retrieves chatmates from either embedded resources or external files
+// based on the UseEmbedded configuration. It's used by service modules to get
+// the list of chatmates available for operations.
+//
+// Returns:
+//   - []string: List of available chatmate filenames
+//   - error: Directory reading or embedded resource access error
 func (cm *ChatMateManager) GetAvailableChatmates() ([]string, error) {
 	if cm.UseEmbedded {
 		// Use embedded files
@@ -151,429 +207,50 @@ func (cm *ChatMateManager) GetAvailableChatmates() ([]string, error) {
 	return chatmates, nil
 }
 
-// GetInstalledChatmates returns all installed chatmate files
+// GetInstalledChatmates returns all currently installed chatmate files.
+//
+// This method scans the VS Code prompts directory to find installed chatmate files.
+// It's used by service modules to determine which chatmates are currently available
+// in the user's VS Code environment.
+//
+// Returns:
+//   - []string: List of installed chatmate filenames
+//   - error: Directory reading or access error
 func (cm *ChatMateManager) GetInstalledChatmates() ([]string, error) {
-	// Check if prompts directory exists
-	if _, err := os.Stat(cm.PromptsDir); os.IsNotExist(err) {
-		return []string{}, nil
-	}
-
 	files, err := os.ReadDir(cm.PromptsDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read prompts directory: %w", err)
 	}
 
-	var chatmates []string
+	var installed []string
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".chatmode.md") {
-			chatmates = append(chatmates, file.Name())
+			installed = append(installed, file.Name())
 		}
 	}
 
-	return chatmates, nil
+	return installed, nil
 }
 
-// InstallAll installs all available chatmate agents
-func (cm *ChatMateManager) InstallAll(force bool) error {
-	// Ensure prompts directory exists
-	if err := os.MkdirAll(cm.PromptsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create prompts directory: %w", err)
+// getDisplayName extracts a user-friendly display name from a chatmate filename.
+//
+// This method converts filenames like "Chatmate - Solve Issue.chatmode.md"
+// to display names like "Solve Issue". It's used by service modules to provide
+// clean, user-friendly output.
+//
+// Parameters:
+//   - filename: The chatmate filename to convert
+//
+// Returns:
+//   - string: User-friendly display name
+func (cm *ChatMateManager) getDisplayName(filename string) string {
+	// Remove the file extension
+	name := strings.TrimSuffix(filename, ".chatmode.md")
+
+	// Remove the "Chatmate - " prefix if present
+	if strings.HasPrefix(name, "Chatmate - ") {
+		name = strings.TrimPrefix(name, "Chatmate - ")
 	}
 
-	chatmates, err := cm.GetAvailableChatmates()
-	if err != nil {
-		return err
-	}
-
-	if len(chatmates) == 0 {
-		return fmt.Errorf("no chatmate files found in mates directory")
-	}
-
-	fmt.Printf("Installing %d chatmates to: %s\n\n", len(chatmates), cm.PromptsDir)
-
-	for _, chatmate := range chatmates {
-		if err := cm.InstallChatmate(chatmate, force); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// InstallSpecific installs specific chatmate agents
-func (cm *ChatMateManager) InstallSpecific(agentNames []string, force bool) error {
-	// Ensure prompts directory exists
-	if err := os.MkdirAll(cm.PromptsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create prompts directory: %w", err)
-	}
-
-	availableChatmates, err := cm.GetAvailableChatmates()
-	if err != nil {
-		return err
-	}
-
-	for _, agentName := range agentNames {
-		var matchingFiles []string
-
-		// Find matching files
-		for _, file := range availableChatmates {
-			if strings.Contains(strings.ToLower(file), strings.ToLower(agentName)) ||
-				file == agentName+".chatmode.md" {
-				matchingFiles = append(matchingFiles, file)
-			}
-		}
-
-		if len(matchingFiles) == 0 {
-			fmt.Printf("⚠️  No chatmate found matching: %s\n", agentName)
-			continue
-		}
-
-		if len(matchingFiles) > 1 {
-			fmt.Printf("⚠️  Multiple chatmates found for \"%s\":\n", agentName)
-			for _, file := range matchingFiles {
-				fmt.Printf("    - %s\n", file)
-			}
-			fmt.Printf("    Installing all matches...\n\n")
-		}
-
-		for _, file := range matchingFiles {
-			if err := cm.InstallChatmate(file, force); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-// InstallChatmate installs a single chatmate file
-func (cm *ChatMateManager) InstallChatmate(filename string, force bool) error {
-	// Security validation
-	if err := security.ValidateChatmateFilename(filename); err != nil {
-		return fmt.Errorf("security validation failed: %w", err)
-	}
-
-	// Validate destination path safety
-	if !security.IsPathSafe(cm.PromptsDir, filename) {
-		return fmt.Errorf("destination path is not safe: %s", filename)
-	}
-
-	// Sanitize filename for extra safety
-	filename = security.SanitizeInput(filename)
-
-	destPath := filepath.Join(cm.PromptsDir, filename)
-
-	// Check if already installed and not forcing
-	if !force {
-		if _, err := os.Stat(destPath); err == nil {
-			fmt.Printf("⏭️  %s (already installed)\n", filename)
-			return nil
-		}
-	}
-
-	// Get file content
-	var content []byte
-	var err error
-
-	if cm.UseEmbedded {
-		// Use embedded file
-		content, err = assets.GetEmbeddedMateContent(filename)
-		if err != nil {
-			fmt.Printf("❌ %s (embedded file not found: %v)\n", filename, err)
-			return err
-		}
-	} else {
-		// Use filesystem file
-		sourcePath := filepath.Join(cm.MatesDir, filename)
-
-		// Security: Validate source path
-		if !security.IsPathSafe(cm.MatesDir, filename) {
-			return fmt.Errorf("source path is not safe: %s", filename)
-		}
-
-		// Check if source file exists
-		if _, err := os.Stat(sourcePath); os.IsNotExist(err) {
-			return fmt.Errorf("chatmate file not found: %s", filename)
-		}
-
-		content, err = os.ReadFile(sourcePath)
-		if err != nil {
-			fmt.Printf("❌ %s (failed to read: %v)\n", filename, err)
-			return err
-		}
-	}
-
-	// Security: Validate content size (max 10MB for chatmate files)
-	const maxChatmateSize = 10 * 1024 * 1024
-	if err := security.ValidateContentLength(content, maxChatmateSize); err != nil {
-		return fmt.Errorf("content validation failed: %w", err)
-	}
-
-	// Write file
-	if err := os.WriteFile(destPath, content, 0644); err != nil {
-		fmt.Printf("❌ %s (failed to write: %v)\n", filename, err)
-		return err
-	}
-
-	status := "installed"
-	if force {
-		status = "reinstalled"
-	}
-	fmt.Printf("✅ %s (%s)\n", filename, status)
-
-	return nil
-}
-
-// UninstallAll removes all installed chatmate agents
-func (cm *ChatMateManager) UninstallAll() error {
-	installedChatmates, err := cm.GetInstalledChatmates()
-	if err != nil {
-		return err
-	}
-
-	if len(installedChatmates) == 0 {
-		fmt.Println("No chatmates currently installed.")
-		return nil
-	}
-
-	for _, chatmate := range installedChatmates {
-		if err := cm.UninstallChatmate(chatmate); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// UninstallSpecific removes specific chatmate agents
-func (cm *ChatMateManager) UninstallSpecific(agentNames []string) error {
-	installedChatmates, err := cm.GetInstalledChatmates()
-	if err != nil {
-		return err
-	}
-
-	for _, agentName := range agentNames {
-		var matchingFiles []string
-
-		// Find matching files
-		for _, file := range installedChatmates {
-			if strings.Contains(strings.ToLower(file), strings.ToLower(agentName)) ||
-				file == agentName+".chatmode.md" {
-				matchingFiles = append(matchingFiles, file)
-			}
-		}
-
-		if len(matchingFiles) == 0 {
-			fmt.Printf("⚠️  No installed chatmate found matching: %s\n", agentName)
-			continue
-		}
-
-		for _, file := range matchingFiles {
-			if err := cm.UninstallChatmate(file); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-// UninstallChatmate removes a single chatmate file
-func (cm *ChatMateManager) UninstallChatmate(filename string) error {
-	// Security validation
-	if err := security.ValidateChatmateFilename(filename); err != nil {
-		return fmt.Errorf("security validation failed: %w", err)
-	}
-
-	// Validate path safety
-	if !security.IsPathSafe(cm.PromptsDir, filename) {
-		return fmt.Errorf("path is not safe: %s", filename)
-	}
-
-	// Sanitize filename for extra safety
-	filename = security.SanitizeInput(filename)
-
-	filePath := filepath.Join(cm.PromptsDir, filename)
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		fmt.Printf("⚠️  %s (not installed)\n", filename)
-		return nil
-	}
-
-	if err := os.Remove(filePath); err != nil {
-		fmt.Printf("❌ %s (failed to uninstall: %v)\n", filename, err)
-		return err
-	}
-
-	fmt.Printf("🗑️  %s (uninstalled)\n", filename)
-	return nil
-}
-
-// ListChatmates displays available and installed chatmates
-func (cm *ChatMateManager) ListChatmates(showAvailable, showInstalled bool) error {
-	availableChatmates, err := cm.GetAvailableChatmates()
-	if err != nil {
-		return err
-	}
-
-	installedChatmates, err := cm.GetInstalledChatmates()
-	if err != nil {
-		return err
-	}
-
-	// Create a map for quick lookup
-	installedMap := make(map[string]bool)
-	for _, installed := range installedChatmates {
-		installedMap[installed] = true
-	}
-
-	if showAvailable {
-		fmt.Println("📦 Available Chatmates:")
-		if len(availableChatmates) == 0 {
-			fmt.Println("  No chatmates available.")
-		} else {
-			for _, chatmate := range availableChatmates {
-				name := strings.TrimSuffix(chatmate, ".chatmode.md")
-				if installedMap[chatmate] {
-					fmt.Printf("  %s ✅ installed\n", name)
-				} else {
-					fmt.Printf("  %s ⏸️  available\n", name)
-				}
-			}
-		}
-		fmt.Println()
-	}
-
-	if showInstalled {
-		fmt.Println("✅ Installed Chatmates:")
-		if len(installedChatmates) == 0 {
-			fmt.Println("  No chatmates currently installed.")
-			fmt.Println("  Run \"chatmate hire\" to install all available chatmates.")
-		} else {
-			for _, chatmate := range installedChatmates {
-				name := strings.TrimSuffix(chatmate, ".chatmode.md")
-				fmt.Printf("  %s ✅ installed\n", name)
-			}
-		}
-		fmt.Println()
-	}
-
-	// Summary
-	fmt.Printf("📊 Summary: %d/%d chatmates installed\n", len(installedChatmates), len(availableChatmates))
-
-	return nil
-}
-
-// ShowStatus displays ChatMate and VS Code installation status
-func (cm *ChatMateManager) ShowStatus() error {
-	fmt.Println("🔍 ChatMate Installation Status")
-	fmt.Println()
-
-	// Check VS Code installation
-	vsCodeInstalled := cm.checkVSCodeInstallation()
-	if vsCodeInstalled {
-		fmt.Println("VS Code: ✅ VS Code detected")
-	} else {
-		fmt.Println("VS Code: ❌ VS Code not found")
-	}
-
-	// Check prompts directory
-	promptsDirExists := true
-	if _, err := os.Stat(cm.PromptsDir); os.IsNotExist(err) {
-		promptsDirExists = false
-	}
-
-	if promptsDirExists {
-		fmt.Println("Prompts Directory: ✅ Prompts directory exists")
-	} else {
-		fmt.Println("Prompts Directory: ⚠️  Prompts directory not found")
-	}
-	fmt.Printf("Path: %s\n\n", cm.PromptsDir)
-
-	// Show chatmate statistics
-	availableChatmates, err := cm.GetAvailableChatmates()
-	if err != nil {
-		return err
-	}
-
-	installedChatmates, err := cm.GetInstalledChatmates()
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("📊 Chatmate Statistics:")
-	fmt.Printf("Available: %d chatmates\n", len(availableChatmates))
-	fmt.Printf("Installed: %d chatmates\n", len(installedChatmates))
-
-	if len(installedChatmates) < len(availableChatmates) {
-		uninstalled := len(availableChatmates) - len(installedChatmates)
-		fmt.Printf("Pending: %d chatmates not installed\n", uninstalled)
-		fmt.Println("\nRun \"chatmate hire\" to install all available chatmates.")
-	}
-
-	return nil
-}
-
-// checkVSCodeInstallation checks if VS Code is installed on the system
-func (cm *ChatMateManager) checkVSCodeInstallation() bool {
-	switch runtime.GOOS {
-	case "darwin": // macOS
-		if _, err := os.Stat("/Applications/Visual Studio Code.app"); err == nil {
-			return true
-		}
-		return false
-
-	case "linux": // Linux
-		paths := []string{
-			"/usr/bin/code",
-			"/usr/local/bin/code",
-			"/snap/bin/code",
-		}
-		for _, path := range paths {
-			if _, err := os.Stat(path); err == nil {
-				return true
-			}
-		}
-		return false
-
-	case "windows": // Windows
-		programFiles := os.Getenv("PROGRAMFILES")
-		if programFiles == "" {
-			programFiles = "C:\\Program Files"
-		}
-		programFilesX86 := os.Getenv("PROGRAMFILES(X86)")
-		if programFilesX86 == "" {
-			programFilesX86 = "C:\\Program Files (x86)"
-		}
-
-		paths := []string{
-			filepath.Join(programFiles, "Microsoft VS Code", "Code.exe"),
-			filepath.Join(programFilesX86, "Microsoft VS Code", "Code.exe"),
-		}
-		for _, path := range paths {
-			if _, err := os.Stat(path); err == nil {
-				return true
-			}
-		}
-		return false
-
-	default:
-		return false
-	}
-}
-
-// ShowConfig displays current configuration
-func (cm *ChatMateManager) ShowConfig() {
-	fmt.Println("⚙️  ChatMate Configuration:")
-	fmt.Println()
-
-	if cm.UseEmbedded {
-		fmt.Printf("Mates Directory: embedded files (self-contained binary)\n")
-	} else {
-		fmt.Printf("Mates Directory: %s\n", cm.MatesDir)
-	}
-
-	fmt.Printf("Prompts Directory: %s\n", cm.PromptsDir)
-	fmt.Printf("Platform: %s\n", runtime.GOOS)
-	fmt.Printf("Go Version: %s\n", runtime.Version())
+	return name
 }

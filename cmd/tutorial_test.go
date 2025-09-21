@@ -6,14 +6,16 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/jonassiebler/chatmate/cmd/tutorial"
 )
 
 func TestRunDailyDevTutorial(t *testing.T) {
 	mockPrompt := func(msg string) bool { return false }
 	output := captureOutput(func() {
-		err := runDailyDevTutorial(mockPrompt)
+		err := tutorial.RunDailyDevTutorial(mockPrompt)
 		if err != nil {
-			t.Errorf("runDailyDevTutorial returned error: %v", err)
+			t.Errorf("RunDailyDevTutorial returned error: %v", err)
 		}
 	})
 	if !strings.Contains(output, "Daily Development Workflow Tutorial") {
@@ -24,9 +26,9 @@ func TestRunDailyDevTutorial(t *testing.T) {
 func TestRunTeamLeadTutorial(t *testing.T) {
 	mockPrompt := func(msg string) bool { return false }
 	output := captureOutput(func() {
-		err := runTeamLeadTutorial(mockPrompt)
+		err := tutorial.RunTeamLeadTutorial(mockPrompt)
 		if err != nil {
-			t.Errorf("runTeamLeadTutorial returned error: %v", err)
+			t.Errorf("RunTeamLeadTutorial returned error: %v", err)
 		}
 	})
 	if !strings.Contains(output, "Team Leadership Tutorial") {
@@ -37,9 +39,9 @@ func TestRunTeamLeadTutorial(t *testing.T) {
 func TestRunDebuggingTutorial(t *testing.T) {
 	mockPrompt := func(msg string) bool { return false }
 	output := captureOutput(func() {
-		err := runDebuggingTutorial(mockPrompt)
+		err := tutorial.RunDebuggingTutorial(mockPrompt)
 		if err != nil {
-			t.Errorf("runDebuggingTutorial returned error: %v", err)
+			t.Errorf("RunDebuggingTutorial returned error: %v", err)
 		}
 	})
 	if !strings.Contains(output, "Debugging with Solve Issue Chatmate") {
@@ -50,9 +52,9 @@ func TestRunDebuggingTutorial(t *testing.T) {
 func TestRunTestingTutorial(t *testing.T) {
 	mockPrompt := func(msg string) bool { return false }
 	output := captureOutput(func() {
-		err := runTestingTutorial(mockPrompt)
+		err := tutorial.RunTestingTutorial(mockPrompt)
 		if err != nil {
-			t.Errorf("runTestingTutorial returned error: %v", err)
+			t.Errorf("RunTestingTutorial returned error: %v", err)
 		}
 	})
 	if !strings.Contains(output, "Testing with Testing Chatmate") {
