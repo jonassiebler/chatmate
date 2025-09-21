@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 // TestNewChatMateManager tests the constructor function
 func TestNewChatMateManager(t *testing.T) {
 	// Save original working directory
@@ -86,7 +85,7 @@ func TestNewChatMateManager(t *testing.T) {
 func TestChatMateManager_ServiceAccessors(t *testing.T) {
 	// Create minimal manager for testing
 	manager := &ChatMateManager{}
-	
+
 	// Initialize services
 	manager.installer = NewInstallerService(manager)
 	manager.uninstaller = NewUninstallerService(manager)
@@ -164,7 +163,7 @@ func TestChatMateManager_EmbeddedMode(t *testing.T) {
 func TestListerService_NewListerService(t *testing.T) {
 	manager := &ChatMateManager{}
 	lister := NewListerService(manager)
-	
+
 	if lister == nil {
 		t.Error("NewListerService returned nil")
 	}
@@ -177,7 +176,7 @@ func TestListerService_NewListerService(t *testing.T) {
 func TestStatusService_NewStatusService(t *testing.T) {
 	manager := &ChatMateManager{}
 	status := NewStatusService(manager)
-	
+
 	if status == nil {
 		t.Error("NewStatusService returned nil")
 	}
@@ -190,7 +189,7 @@ func TestStatusService_NewStatusService(t *testing.T) {
 func TestValidatorService_NewValidatorService(t *testing.T) {
 	manager := &ChatMateManager{}
 	validator := NewValidatorService(manager)
-	
+
 	if validator == nil {
 		t.Error("NewValidatorService returned nil")
 	}
