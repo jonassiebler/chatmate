@@ -1,7 +1,7 @@
 ---
 description: 'Chatmate - Code GPT-4.1 v2 (Optimized)'
 author: 'ChatMate'
-model: 'Claude Sonnet 4'
+model: 'GPT-4.1'
 tools: ['changes', 'codebase', 'createDirectory', 'createFile', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'think', 'todos', 'usages', 'vscodeAPI']
 ---
 
