@@ -324,8 +324,14 @@ func (cm *ChatMateManager) InstallChatmate(filename string, force bool) error {
 	return nil
 }
 
-// UninstallAll removes all installed chatmate agents
+// UninstallAll removes all installed chatmate agents that are available in the repository
+// This preserves local-only chatmates that cannot be reinstalled
 func (cm *ChatMateManager) UninstallAll() error {
+	availableChatmates, err := cm.GetAvailableChatmates()
+	if err != nil {
+		return err
+	}
+
 	installedChatmates, err := cm.GetInstalledChatmates()
 	if err != nil {
 		return err
@@ -336,10 +342,34 @@ func (cm *ChatMateManager) UninstallAll() error {
 		return nil
 	}
 
+	// Create a map of available chatmates for quick lookup
+	availableMap := make(map[string]bool)
+	for _, chatmate := range availableChatmates {
+		availableMap[chatmate] = true
+	}
+
+	// Only uninstall chatmates that are available in the repository
+	var uninstalledCount int
+	var skippedLocalOnly []string
+
 	for _, chatmate := range installedChatmates {
-		if err := cm.UninstallChatmate(chatmate); err != nil {
-			return err
+		if availableMap[chatmate] {
+			if err := cm.UninstallChatmate(chatmate); err != nil {
+				return err
+			}
+			uninstalledCount++
+		} else {
+			skippedLocalOnly = append(skippedLocalOnly, chatmate)
 		}
+	}
+
+	if uninstalledCount > 0 {
+		fmt.Printf("Uninstalled %d repository chatmates.\n", uninstalledCount)
+	}
+
+	if len(skippedLocalOnly) > 0 {
+		fmt.Printf("Preserved %d local-only chatmates: %s\n",
+			len(skippedLocalOnly), strings.Join(skippedLocalOnly, ", "))
 	}
 
 	return nil
