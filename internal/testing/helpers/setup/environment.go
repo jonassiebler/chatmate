@@ -98,3 +98,28 @@ func CreateMockVSCodeDir(t *testing.T, tempDir string) string {
 	require.NoError(t, os.MkdirAll(vscodeDir, 0755))
 	return vscodeDir
 }
+
+// SimulateOS simulates a specific OS environment for testing
+func (env *TestEnvironment) SimulateOS(t *testing.T, osType string) {
+	switch osType {
+	case "windows":
+		MockWindowsEnv(t, env.TempDir)
+	case "macos", "darwin":
+		MockUnixEnv(t, env.TempDir)
+	case "linux":
+		MockUnixEnv(t, env.TempDir)
+	default:
+		t.Fatalf("Unsupported OS type for simulation: %s", osType)
+	}
+}
+
+// SetupMockVSCode sets up a mock VS Code environment for the given OS
+func (env *TestEnvironment) SetupMockVSCode(t *testing.T, osType string) string {
+	vscodeDir := CreateMockVSCodeDir(t, env.TempDir)
+
+	// Create prompts subdirectory
+	promptsDir := filepath.Join(vscodeDir, "prompts")
+	require.NoError(t, os.MkdirAll(promptsDir, 0755))
+
+	return promptsDir
+}
