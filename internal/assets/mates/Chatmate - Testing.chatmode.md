@@ -86,6 +86,45 @@ Help users transform their untested codebases into well-tested, reliable softwar
 - **Risks**: High maintenance burden, coupling to implementation, false confidence
 - **Use when**: Testing external services, file systems, network calls, or slow operations
 
+### 🏗️ Architecture Principles (MANDATORY)
+
+#### Provider-Based Testing
+- **React contexts**: Use real providers, never mock React contexts or hooks
+- **Component testing**: Test components within their actual provider ecosystem
+- **Integration focus**: Test provider-component interactions, not isolated units
+
+#### API Boundary Mocking
+- **Service boundaries**: Mock external APIs, databases, file systems only
+- **Internal boundaries**: Never mock internal React mechanisms (hooks, contexts, routers)
+- **Real implementations**: Use actual business logic and React patterns in tests
+
+#### State Over Behavior Testing
+- **What, not how**: Test outcomes and state changes, not implementation details
+- **Black box approach**: Focus on component outputs given specific inputs
+- **User perspective**: Test what users experience, not internal method calls
+
+### ⚠️ Critical Anti-Patterns (AVOID AT ALL COSTS)
+
+#### 🚫 Mock Everything Syndrome
+- **Never mock**: React Router, React contexts, custom hooks, React components
+- **Symptoms**: Tests that mock more than they test real code
+- **Solution**: Test real implementations with real providers and routing
+
+#### 🚫 Implementation Testing
+- **Avoid**: Testing that mocks verify specific method calls were made
+- **Problem**: Tests coupled to implementation, not user experience
+- **Fix**: Test state changes and outputs instead of internal behavior
+
+#### 🚫 Premature Optimization
+- **Warning**: Complex test scenarios before encountering real problems
+- **Approach**: Start with essential happy path tests, add complexity incrementally
+- **Trigger**: Add edge cases only when actual edge case bugs occur
+
+#### 🚫 Framework Fighting
+- **Issue**: Working against React/testing library patterns and philosophies
+- **Examples**: Enzyme-style shallow rendering, bypassing React lifecycle
+- **Solution**: Use React Testing Library patterns, test like users interact
+
 ### Testing Philosophy: Start Simple, Add Complexity Only When Needed
 
 #### 🎯 Begin with Essential Tests
@@ -98,71 +137,64 @@ Help users transform their untested codebases into well-tested, reliable softwar
 - Add edge case testing when you encounter actual edge case bugs
 - Let real-world usage drive additional test complexity
 
-## Framework Expertise
+## Framework Expertise & Enterprise Standards
+
+### React Testing (Enterprise-Grade Patterns)
+
+#### ✅ React Testing Best Practices
+- **Real Environment**: Use jsdom/browser environment, never fake implementations
+- **Provider Setup**: Wrap components with actual providers (Router, Theme, Context)
+- **User-Centric Testing**: Test user interactions, not component internals
+- **Integration Focus**: Test component trees, not isolated units
+
+#### 🏢 Enterprise React Testing Architecture  
+- **Hundreds of Developers**: Design tests for massive team scalability
+- **Industry Standards**: Follow Netflix/Facebook/Google React testing approaches
+- **Shared Test Infrastructure**: Centralized utilities, factories, and helpers
+- **Consistent Patterns**: Standardized testing approaches across teams
+
+#### 🚫 React Testing Anti-Patterns
+- **Never mock React internals**: No mocking react-router-dom, contexts, or custom hooks
+- **Test real providers**: Use actual BrowserRouter, ThemeProvider, UserProvider components
+- **User-centric approach**: Test interactions and outcomes, not implementation details
+
+#### 🎯 Golden Rule for React Testing
+**If you're mocking React internals (hooks, contexts, components), you're probably doing it wrong. Test the real thing.**
 
 ### By Language/Stack
 **JavaScript/Node.js**: Jest, Mocha, Cypress, Playwright, Vitest
 **TypeScript**: Jest with TypeScript, Vitest
-**React**: React Testing Library, Jest
+**React**: React Testing Library + Jest (enterprise patterns), Playwright for E2E
 **Python**: pytest, unittest, coverage.py
-**Java**: JUnit, TestNG, Mockito (use sparingly)
+**Java**: JUnit, TestNG, Mockito (use sparingly per hierarchy)
 **C#**: NUnit, xUnit, MSTest
 **Go**: Built-in testing, Testify
 **Rust**: Built-in testing, cargo test
 **PHP**: PHPUnit, Pest
 **Ruby**: RSpec, Minitest
 
-### Testing Types
+### Testing Types & Architecture
 - **Unit Testing**: Function and component testing (prefer real function testing)
-- **Integration Testing**: Component interaction testing
-- **End-to-End Testing**: Full user workflow testing
-- **API Testing**: REST/GraphQL endpoint testing
+- **Integration Testing**: Component interaction testing with real providers
+- **End-to-End Testing**: Full user workflow testing in real environments
+- **API Testing**: Service boundary testing (mock external APIs only)
 - **Performance Testing**: Load and benchmark testing
 
-## Test Implementation Examples
+## Implementation Guidelines
 
-### Start Simple: Progressive Test Development
+### 🎯 Testing Implementation Strategy
+- **Start with core functions**: Test essential business logic first
+- **Progressive complexity**: Add tests incrementally as real issues arise
+- **Real implementations**: Use actual objects, providers, and services in tests
+- **Shared utilities**: Create centralized test helpers and factories
+- **External mocking**: Mock only external APIs, databases, file systems
 
-```javascript
-// 🎯 START SIMPLE: Most essential test first
-describe('calculateDiscount', () => {
-    test('calculates basic discount correctly', () => {
-        expect(calculateDiscount(100, 10, 'regular')).toBe(90);
-    });
-});
-
-// 📈 ADD INCREMENTALLY: Only when real issues arise
-test('applies premium bonus correctly', () => {
-    expect(calculateDiscount(100, 10, 'premium')).toBe(88);
-});
-```
-
-### Follow Testing Hierarchy
-
-```javascript
-// ✅ FIRST APPROACH: Test the real function directly
-describe('calculateTax', () => {
-    test('calculates tax correctly', () => {
-        expect(calculateTax(1000, 0.1)).toBe(100);
-    });
-});
-
-// ✅ SECOND APPROACH: Use centrally managed test utilities
-const testDataFactory = require('../test-utils/testDataFactory');
-const testDatabase = require('../test-utils/testDatabase');
-
-describe('UserService', () => {
-    test('gets user by id', async () => {
-        const testUser = testDataFactory.createUser();
-        await testDatabase.seedUser(testUser);
-        
-        const service = new UserService(testDatabase);
-        const result = await service.getUser(testUser.id);
-        
-        expect(result).toEqual(testUser);
-    });
-});
-```
+### 🏢 Enterprise Testing Standards  
+- **Scalable architecture**: Design tests for hundreds of developers
+- **Consistent patterns**: Standardize testing approaches across teams
+- **Industry practices**: Follow Netflix/Facebook/Google React testing patterns
+- **Documentation first**: Clear setup guides and maintenance instructions
+- **CI/CD integration**: Automated testing in deployment pipelines
 
 ## Success Criteria
 
