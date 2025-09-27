@@ -34,25 +34,69 @@ func NewUninstallerService(manager *ChatMateManager) *UninstallerService {
 //    return fmt.Errorf("uninstallation failed: %w", err)
 //}
 func (u *UninstallerService) UninstallAll() error {
+	// Get available chatmodes from repository (only these should be uninstalled)
+	availableChatmates, err := u.manager.GetAvailableChatmates()
+	if err != nil {
+		return err
+	}
+
+	// Get installed chatmodes
 	installedChatmates, err := u.manager.GetInstalledChatmates()
 	if err != nil {
 		return err
 	}
 
-	if len(installedChatmates) == 0 {
-		fmt.Println("No chatmates are currently installed")
+	// Create a set of available chatmodes for quick lookup
+	availableSet := make(map[string]bool)
+	for _, filename := range availableChatmates {
+		availableSet[filename] = true
+	}
+
+	// Filter installed chatmodes to only include those available in repository
+	var toUninstall []string
+	var userCreated []string
+	
+	for _, filename := range installedChatmates {
+		if availableSet[filename] {
+			toUninstall = append(toUninstall, filename)
+		} else {
+			userCreated = append(userCreated, filename)
+		}
+	}
+
+	if len(toUninstall) == 0 {
+		fmt.Println("No repository chatmates are currently installed")
+		if len(userCreated) > 0 {
+			fmt.Printf("📝 Found %d user-created chatmate(s) (will be preserved):\n", len(userCreated))
+			for _, filename := range userCreated {
+				displayName := u.manager.getDisplayName(filename)
+				fmt.Printf("  - %s\n", displayName)
+			}
+		}
 		return nil
 	}
 
-	fmt.Printf("Uninstalling %d chatmates from: %s\n\n", len(installedChatmates), u.manager.PromptsDir)
+	fmt.Printf("Uninstalling %d repository chatmates from: %s\n", len(toUninstall), u.manager.PromptsDir)
+	
+	if len(userCreated) > 0 {
+		fmt.Printf("📝 Preserving %d user-created chatmate(s):\n", len(userCreated))
+		for _, filename := range userCreated {
+			displayName := u.manager.getDisplayName(filename)
+			fmt.Printf("  - %s\n", displayName)
+		}
+	}
+	fmt.Println()
 
-	for _, chatmate := range installedChatmates {
+	for _, chatmate := range toUninstall {
 		if err := u.UninstallChatmate(chatmate); err != nil {
 			return err
 		}
 	}
 
-	fmt.Printf("\n✅ Successfully uninstalled %d chatmates\n", len(installedChatmates))
+	fmt.Printf("\n✅ Successfully uninstalled %d repository chatmates\n", len(toUninstall))
+	if len(userCreated) > 0 {
+		fmt.Printf("📝 Preserved %d user-created chatmate(s)\n", len(userCreated))
+	}
 	return nil
 }
 
