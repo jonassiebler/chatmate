@@ -29,10 +29,11 @@ func NewUninstallerService(manager *ChatMateManager) *UninstallerService {
 //
 // Example:
 //
-//err := uninstaller.UninstallAll()
-//if err != nil {
-//    return fmt.Errorf("uninstallation failed: %w", err)
-//}
+// err := uninstaller.UninstallAll()
+//
+//	if err != nil {
+//	   return fmt.Errorf("uninstallation failed: %w", err)
+//	}
 func (u *UninstallerService) UninstallAll() error {
 	// Get available chatmodes from repository (only these should be uninstalled)
 	availableChatmates, err := u.manager.GetAvailableChatmates()
@@ -55,7 +56,7 @@ func (u *UninstallerService) UninstallAll() error {
 	// Filter installed chatmodes to only include those available in repository
 	var toUninstall []string
 	var userCreated []string
-	
+
 	for _, filename := range installedChatmates {
 		if availableSet[filename] {
 			toUninstall = append(toUninstall, filename)
@@ -76,16 +77,34 @@ func (u *UninstallerService) UninstallAll() error {
 		return nil
 	}
 
-	fmt.Printf("Uninstalling %d repository chatmates from: %s\n", len(toUninstall), u.manager.PromptsDir)
-	
+	// Safety confirmation - show what will be uninstalled and preserved
+	fmt.Printf("🚨 UNINSTALL CONFIRMATION\n")
+	fmt.Printf("Repository chatmates to be UNINSTALLED (%d):\n", len(toUninstall))
+	for _, filename := range toUninstall {
+		displayName := u.manager.getDisplayName(filename)
+		fmt.Printf("  ❌ %s\n", displayName)
+	}
+
 	if len(userCreated) > 0 {
-		fmt.Printf("📝 Preserving %d user-created chatmate(s):\n", len(userCreated))
+		fmt.Printf("\nUser-created chatmates to be PRESERVED (%d):\n", len(userCreated))
 		for _, filename := range userCreated {
 			displayName := u.manager.getDisplayName(filename)
-			fmt.Printf("  - %s\n", displayName)
+			fmt.Printf("  📝 %s\n", displayName)
 		}
 	}
-	fmt.Println()
+
+	fmt.Printf("\nDirectory: %s\n", u.manager.PromptsDir)
+	fmt.Print("\nDo you want to proceed with uninstalling these repository chatmates? (y/N): ")
+
+	var response string
+	fmt.Scanln(&response)
+
+	if response != "y" && response != "Y" && response != "yes" && response != "YES" {
+		fmt.Println("❌ Uninstall operation cancelled by user")
+		return nil
+	}
+
+	fmt.Printf("\nProceeding with uninstallation...\n")
 
 	for _, chatmate := range toUninstall {
 		if err := u.UninstallChatmate(chatmate); err != nil {
@@ -114,11 +133,12 @@ func (u *UninstallerService) UninstallAll() error {
 //
 // Example:
 //
-//names := []string{"Solve Issue", "Code Review", "Testing"}
-//err := uninstaller.UninstallSpecific(names)
-//if err != nil {
-//    return fmt.Errorf("specific uninstallation failed: %w", err)
-//}
+// names := []string{"Solve Issue", "Code Review", "Testing"}
+// err := uninstaller.UninstallSpecific(names)
+//
+//	if err != nil {
+//	   return fmt.Errorf("specific uninstallation failed: %w", err)
+//	}
 func (u *UninstallerService) UninstallSpecific(agentNames []string) error {
 	if len(agentNames) == 0 {
 		fmt.Println("No specific chatmates specified for uninstallation")
@@ -211,11 +231,13 @@ func (u *UninstallerService) UninstallChatmate(filename string) error {
 //
 // Example:
 //
-//removed, err := uninstaller.CleanupOrphanedFiles()
-//if err != nil {
-//    return fmt.Errorf("cleanup failed: %w", err)
-//}
-//fmt.Printf("Removed %d orphaned files", removed)
+// removed, err := uninstaller.CleanupOrphanedFiles()
+//
+//	if err != nil {
+//	   return fmt.Errorf("cleanup failed: %w", err)
+//	}
+//
+// fmt.Printf("Removed %d orphaned files", removed)
 func (u *UninstallerService) CleanupOrphanedFiles() (int, error) {
 	installedChatmates, err := u.manager.GetInstalledChatmates()
 	if err != nil {
