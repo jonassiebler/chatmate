@@ -56,7 +56,7 @@ Facilitate chatmate contributions by:
 #### 3-Domain Validation (CRITICAL)
 
 ##### Implementation Domain
-- **File size check**: `wc -l [filepath]` - if >300 lines, restructure immediately
+- **File size check**: `wc -l [filepath]` - WARNING: >300 lines, MUST FIX: >600 lines (aim for <200)
 - **Structure validation**: YAML frontmatter, proper sections, tool selection
 - **Integration test**: Ensure chatmate builds into binary correctly
 
@@ -75,10 +75,10 @@ Facilitate chatmate contributions by:
 - **No duplicate functionality** - unique value proposition required
 - **Professional structure** - follow ChatMate conventions  
 - **Appropriate tools** - match functionality requirements
-- **File size compliance** - under 300 lines, restructure if needed
+- **File size compliance** - aim for <200 lines, WARNING: >300, MUST FIX: >600
 
 #### File Size Management
-**If chatmate >300 lines**:
+**If chatmate >600 lines (MUST FIX) or >300 lines (WARNING)**:
 1. **Split by major sections** - extract workflow phases
 2. **Modularize complex workflows** - focused sub-sections
 3. **Separate concerns** - implementation vs high-level mission
@@ -91,7 +91,7 @@ Facilitate chatmate contributions by:
 - **Include testing checklist** and validation results
 
 ## Testing Checklist (All Required)
-- [ ] **Implementation**: Builds successfully, proper structure, <300 lines
+- [ ] **Implementation**: Builds successfully, proper structure, aim for <200 lines (WARNING: >300, MUST FIX: >600)
 - [ ] **Testing**: Installation works, VS Code integration functional, workflows validated
 - [ ] **Documentation**: Clear instructions, PR docs complete, repository docs updated
 
@@ -99,7 +99,7 @@ Facilitate chatmate contributions by:
 
 **Pre-PR Requirements**:
 - ✅ All 3 domains validated
-- ✅ File size under 300 lines
+- ✅ File size: aim for <200 lines, WARNING: >300, MUST FIX: >600
 - ✅ Local testing complete
 - ✅ Documentation comprehensive
 - ✅ Unique functionality confirmed
@@ -154,7 +154,7 @@ Facilitate chatmate contributions by:
 #### 3-Domain Validation (CRITICAL)
 
 ##### Implementation Domain
-- **File size check**: `wc -l [filepath]` - if >300 lines, restructure immediately
+- **File size check**: `wc -l [filepath]` - WARNING: >300 lines, MUST FIX: >600 lines (aim for <200)
 - **Structure validation**: YAML frontmatter, proper sections, tool selection
 - **Integration test**: Ensure chatmate builds into binary correctly
 
@@ -173,10 +173,10 @@ Facilitate chatmate contributions by:
 - **No duplicate functionality** - unique value proposition required
 - **Professional structure** - follow ChatMate conventions
 - **Appropriate tools** - match functionality requirements
-- **File size compliance** - under 300 lines, restructure if needed
+- **File size compliance** - aim for <200 lines, WARNING: >300, MUST FIX: >600
 
 #### File Size Management
-**If chatmate >300 lines**:
+**If chatmate >600 lines (MUST FIX) or >300 lines (WARNING)**:
 1. **Split by major sections** - extract workflow phases
 2. **Modularize complex workflows** - focused sub-sections
 3. **Separate concerns** - implementation vs high-level mission
@@ -189,7 +189,7 @@ Facilitate chatmate contributions by:
 - **Include testing checklist** and validation results
 
 ## Testing Checklist (All Required)
-- [ ] **Implementation**: Builds successfully, proper structure, <300 lines
+- [ ] **Implementation**: Builds successfully, proper structure, aim for <200 lines (WARNING: >300, MUST FIX: >600)
 - [ ] **Testing**: Installation works, VS Code integration functional, workflows validated
 - [ ] **Documentation**: Clear instructions, PR docs complete, repository docs updated
 
@@ -197,7 +197,7 @@ Facilitate chatmate contributions by:
 
 **Pre-PR Requirements**:
 - ✅ All 3 domains validated
-- ✅ File size under 300 lines
+- ✅ File size: aim for <200 lines, WARNING: >300, MUST FIX: >600
 - ✅ Local testing complete
 - ✅ Documentation comprehensive
 - ✅ Unique functionality confirmed

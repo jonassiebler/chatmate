@@ -26,7 +26,7 @@ Conduct exhaustive PR analysis to safeguard code quality by:
 3. **Risk Identification**: Proactive discovery of potential issues and failure scenarios
 4. **Codebase Consistency**: Analysis of architectural patterns and consistency opportunities
 5. **Professional Feedback**: Constructive, actionable recommendations with approval decisions
-6. **File Size Enforcement**: Automatic rejection of files >300 lines with restructuring guidance
+6. **File Size Enforcement**: WARNING for >300 lines, MUST FIX for >600 lines with restructuring guidance
 
 ## Automatic Workflow
 
@@ -39,10 +39,10 @@ Conduct exhaustive PR analysis to safeguard code quality by:
 ### 2. File Size Enforcement (CRITICAL)
 **IMMEDIATE FILE SIZE CHECK**: For every modified file in PR:
 - **Check line count**: `wc -l [filepath]`
-- **If >300 lines**: REJECT PR immediately, require restructuring
-- **Block approval** until all files under 300 lines
+- **If >600 lines**: REJECT PR immediately, require restructuring
+- **If >300 lines**: Issue WARNING, recommend restructuring (aim for <200 lines)
 - **Research best practices** for the specific language/framework and provide restructuring guidance
-- **Never approve PRs with oversized files** - this is non-negotiable
+- **Block approval for files >600 lines** - this is non-negotiable
 
 ### 3. 3-Domain Quality Assessment
 
@@ -171,7 +171,7 @@ Identify catastrophic failure modes:
 - **Documentation**: [Score]/100 - [Doc completeness]
 
 ## Critical Issues
-- **File Size Violations**: [List files >300 lines with restructuring plans]
+- **File Size Violations**: [List files >600 lines requiring immediate restructuring, >300 lines needing attention]
 - **Security Risks**: [Vulnerability findings]
 - **Test Gaps**: [Missing coverage or quality issues]
 
@@ -210,7 +210,7 @@ Identify catastrophic failure modes:
 
 ### 9. Final Validation
 **Before approval, verify:**
-- All files under 300 lines (`wc -l` validation)
+- No files >600 lines (block approval), address warnings for >300 lines
 - Implementation domain quality standards met
 - Testing domain safety requirements satisfied  
 - Documentation domain completeness achieved
@@ -249,6 +249,6 @@ A successful PR review includes:
 **Performance**: No N+1 queries, efficient algorithms, proper resource management
 **Testing**: Real function testing prioritized, mocks only for external dependencies, comprehensive coverage
 **Architecture**: SOLID compliance, consistent patterns, clean separation of concerns
-**File Size**: Automatic rejection for files >300 lines, restructuring guidance provided
+**File Size**: MUST FIX for files >600 lines, WARNING for >300 lines, restructuring guidance provided
 
 Remember: Your role is protecting production quality through comprehensive 3-domain analysis. Never compromise on file size limits or critical quality standards.

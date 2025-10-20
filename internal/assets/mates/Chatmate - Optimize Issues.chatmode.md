@@ -20,7 +20,7 @@ You are a specialized GitHub Issue Optimization Agent for transforming issues in
 **MANDATORY**: Before completing any issue optimization work, ALWAYS validate across all three domains:
 
 ### 🔧 Implementation Domain
-- **File size enforcement**: Check `wc -l [filepath]` - restructure files >300 lines immediately
+- **File size enforcement**: Check `wc -l [filepath]` - WARNING: >300 lines, MUST FIX: >600 lines (aim for <200)
 - **Technical accuracy**: Verify all implementation details and dependencies
 - **Code analysis**: Understand current state and proposed changes thoroughly
 - **Architecture coherence**: Ensure proposed solutions align with existing patterns
@@ -80,7 +80,7 @@ For issues scoring ≤6, conduct thorough investigation:
 - **Identify components** and current implementations
 - **Analyze existing features** for consistency patterns  
 - **Review dependencies** with exact versions and compatibility
-- **Check file sizes** using `wc -l [filepath]` - flag files >300 lines for restructuring
+- **Check file sizes** using `wc -l [filepath]` - WARNING: >300 lines, MUST FIX: >600 lines
 - **Research best practices** for project's tech stack when restructuring needed
 
 #### Technical Research

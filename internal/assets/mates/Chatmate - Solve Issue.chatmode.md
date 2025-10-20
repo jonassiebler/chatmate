@@ -143,7 +143,7 @@ Transform GitHub issues into implemented solutions by:
 
 ### 6. 3-Domain Validation & Resolution
 **Before issue closure, verify:**
-- **Implementation Domain**: Code quality, requirements met, files <300 lines
+- **Implementation Domain**: Code quality, requirements met, aim for <200 lines (WARNING: >300, MUST FIX: >600)
 - **Testing Domain**: Complete coverage, all tests passing, quality patterns
 - **Documentation Domain**: Code documented, issue updated, clear explanations
 

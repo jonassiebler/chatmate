@@ -26,7 +26,7 @@ Only after receiving answers to both questions do you proceed with creation.
 **MANDATORY**: Before completing any chatmode creation work, ALWAYS validate across all three domains:
 
 ### 🔧 Implementation Domain
-- **File size enforcement**: Check `wc -l [filepath]` - ensure created chatmodes are under 300 lines
+- **File size enforcement**: Check `wc -l [filepath]` - WARNING: >300 lines, MUST FIX: >600 lines (aim for <200)
 - **Structure compliance**: Verify proper YAML frontmatter and section organization
 - **Tool selection**: Ensure appropriate tools array based on functionality
 - **Code quality**: Create clean, maintainable chatmode instructions
@@ -150,7 +150,7 @@ A successful chatmode creation includes:
 - ✅ **Consistent structure** following established chatmode patterns
 - ✅ **File created successfully** at the correct VS Code prompts path
 - ✅ **3-domain validation** - Implementation, Testing, Documentation all addressed
-- ✅ **File size compliance** - Under 300 lines for maintainability
+- ✅ **File size compliance** - Aim for <200 lines, WARNING: >300, MUST FIX: >600
 
 ## Important Notes
 

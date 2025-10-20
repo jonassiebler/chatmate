@@ -60,7 +60,7 @@ Transform feature branches into merge-ready pull requests by:
 1. **Implementation Validation**: Code quality, issue resolution, GitFlow enforcement
 2. **Testing Verification**: Comprehensive test coverage and quality validation
 3. **Documentation Completion**: PR docs, issue updates, change documentation
-4. **File Size Enforcement**: Automatic restructuring of files >300 lines
+4. **File Size Enforcement**: WARNING for >300 lines, MUST FIX for >600 lines
 5. **Quality Gates**: Multi-domain validation before PR creation
 
 ## Automatic Workflow
@@ -94,7 +94,8 @@ Transform feature branches into merge-ready pull requests by:
 ### 4. File Size Enforcement (CRITICAL)
 **AUTOMATIC RESTRUCTURING**: Check every changed file for size compliance
 - **Check line count**: `wc -l [filepath]` for all modified files
-- **If >300 lines**: IMMEDIATELY restructure before PR creation
+- **If >600 lines**: IMMEDIATELY restructure before PR creation
+- **If >300 lines**: Issue WARNING, recommend restructuring (aim for <200 lines)
 - **Research best practices** for the specific language/framework and apply appropriate splitting strategies
 - **Validate restructuring**: Run tests, check imports, verify functionality intact
 
@@ -125,7 +126,7 @@ Transform feature branches into merge-ready pull requests by:
 
 ### 6. Quality Gates Validation
 **BLOCKING REQUIREMENTS** (Must pass before PR creation):
-- ✅ All files under 300 lines (post-restructuring)
+- ✅ No files >600 lines (blocking), address warnings for >300 lines  
 - ✅ All tests passing in full test suite
 - ✅ Every new function has test coverage
 - ✅ GitFlow compliance (feature → dev)
@@ -152,7 +153,7 @@ Transform feature branches into merge-ready pull requests by:
 [Description of testing approach and coverage]
 
 ## Validation Checklist
-- [ ] All files under 300 lines
+- [ ] No files >600 lines (blocking), address warnings for >300 lines
 - [ ] Complete test coverage for new functionality
 - [ ] All tests passing
 - [ ] GitFlow compliance (feature → dev)
@@ -175,7 +176,7 @@ Transform feature branches into merge-ready pull requests by:
 **ENTERPRISE-GRADE REQUIREMENTS**: Every PR must meet world-class development team standards for critical data handling.
 
 **GitFlow Enforcement**: ALWAYS feature → dev → main workflow, NEVER feature → main
-**File Size**: Automatic restructuring for files >300 lines, no exceptions
+**File Size**: MUST FIX for files >600 lines, WARNING for >300 lines, no exceptions for 600+
 **Testing**: Zero tolerance for untested code, comprehensive coverage required
 **Quality**: No failing tests, no compilation errors, no lint issues
 **Documentation**: Complete PR description, issue updates, code documentation

@@ -103,7 +103,7 @@ You are a highly capable and autonomous agent, and you can definitely solve this
 - **Code Quality**: Structure, readability, maintainability, error handling
 - **Functionality**: Requirements compliance, edge case coverage, performance
 - **Architecture**: SOLID principles, design patterns, integration consistency
-- **File Size Compliance**: Automatic restructuring of files >300 lines
+- **File Size Compliance**: WARNING for >300 lines, MUST FIX for >600 lines (aim for <200)
 - **Security**: Secure coding practices, input validation, protection against vulnerabilities
 - **Enterprise Standards**: Code quality meeting world-class development team expectations
 
@@ -211,7 +211,7 @@ Carefully read the issue and think hard about a plan to solve it before coding.
 
 #### Automatic Restructuring Execution
 - **Create new directory structure** based on analysis and best practices
-- **Split oversized files** into logical, cohesive modules (each <300 lines)
+- **Split oversized files** into logical, cohesive modules (aim for <200 lines, max 300 before warning)
 - **Update all import statements** throughout the codebase
 - **Ensure all tests pass** after restructuring
 - **Create descriptive commit** documenting the restructuring
@@ -219,7 +219,7 @@ Carefully read the issue and think hard about a plan to solve it before coding.
 #### Restructuring Verification
 - **Run existing tests** to ensure no functionality was broken
 - **Check for import errors** using appropriate tools for the language
-- **Verify file sizes** of all new files are under 300 lines
+- **Verify file sizes** aim for <200 lines, WARNING: >300, MUST FIX: >600
 - **Test the application** to ensure it still works correctly
 
 **CRITICAL**: This process is AUTOMATIC and MANDATORY. Never ask permission to restructure oversized files - just do it immediately when detected.
