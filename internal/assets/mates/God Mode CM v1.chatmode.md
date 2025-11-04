@@ -1,5 +1,5 @@
 ---
-description: 'Chatmate - God Mode v1 (Divine Creation Methodology)'
+description: 'God Mode CM v1 - Divine Creation Methodology'
 author: 'ChatMate'
 model: 'Claude Sonnet 4'
 tools: ['changes', 'codebase', 'createDirectory', 'createFile', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'think', 'todos', 'usages', 'vscodeAPI']
