@@ -2,7 +2,41 @@
 description: 'Devil Mode CM v1 - Divine Adversary Methodology'
 author: 'ChatMate'
 model: 'GPT-5-Codex (Preview)'
-tools: ['changes', 'codebase', 'createDirectory', 'createFile', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'think', 'todos', 'usages', 'vscodeAPI']
+tools: [
+	# Common Ops
+	'changes', 'codebase', 'search', 'searchResults', 'todos', 'usages', 'think', 'problems', 'vscodeAPI',
+	# Execution & Automation
+	'runCommands', 'runTasks', 'runTests', 'runNotebooks', 'new', 'extensions', 'openSimpleBrowser', 'fetch', 'githubRepo', 'testFailure', 'terminalLastCommand', 'terminalSelection', 'runSubagent',
+	# Editing & Workspace
+	'createDirectory', 'createFile', 'editFiles', 'findTestFiles',
+	# Azure AI Search MCP
+	'Azure MCP/search_service_list', 'Azure MCP/search_index_get', 'Azure MCP/search_index_query',
+	'Azure MCP/search_knowledge_source_get', 'Azure MCP/search_knowledge_base_get', 'Azure MCP/search_knowledge_base_retrieve',
+	# Azure DevOps MCP
+	'microsoft/azure-devops-mcp/search_workitem', 'microsoft/azure-devops-mcp/mcp_ado_wit_get_work_item',
+	'microsoft/azure-devops-mcp/mcp_ado_wit_create_work_item', 'microsoft/azure-devops-mcp/mcp_ado_wit_update_work_item',
+	'microsoft/azure-devops-mcp/mcp_ado_wit_add_work_item_comment',
+	'microsoft/azure-devops-mcp/mcp_ado_wit_get_query_results_by_id', 'microsoft/azure-devops-mcp/mcp_ado_wit_my_work_items',
+	'microsoft/azure-devops-mcp/mcp_ado_wit_list_backlog_work_items', 'microsoft/azure-devops-mcp/mcp_ado_work_list_iterations',
+	'microsoft/azure-devops-mcp/mcp_ado_work_assign_iterations',
+	# Context7 MCP
+	'context7/resolve-library-id', 'context7/get-library-docs',
+	# Serena MCP
+	'serena/activate_project', 'serena/onboarding', 'serena/find_symbol', 'serena/find_referencing_symbols',
+	'serena/get_symbols_overview', 'serena/read_file', 'serena/list_dir', 'serena/insert_before_symbol',
+	'serena/insert_after_symbol', 'serena/insert_at_line', 'serena/replace_content', 'serena/replace_lines',
+	'serena/delete_lines', 'serena/rename_symbol', 'serena/search_for_pattern', 'serena/summarize_changes',
+	'serena/execute_shell_command', 'serena/list_memories', 'serena/read_memory', 'serena/write_memory',
+	'serena/think_about_task_adherence', 'serena/think_about_whether_you_are_done',
+	# Microsoft Docs MCP
+	'microsoft.docs.mcp/microsoft_docs_search',
+	# Playwright MCP
+	'playwright/browser_navigate', 'playwright/browser_click', 'playwright/browser_fill_form',
+	'playwright/browser_type', 'playwright/browser_press_key', 'playwright/browser_run_code',
+	'playwright/browser_snapshot', 'playwright/browser_take_screenshot', 'playwright/browser_tabs',
+	'playwright/browser_install', 'playwright/browser_pdf_save', 'playwright/browser_start_tracing',
+	'playwright/browser_stop_tracing'
+]
 ---
 
 # Devil Mode: Divine Adversary Protocol
