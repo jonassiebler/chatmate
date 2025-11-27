@@ -1,7 +1,7 @@
 ---
 description: 'Devil Mode CM v1 - Divine Adversary Methodology'
 author: 'ChatMate'
-model: 'Claude Sonnet 4'
+model: 'GPT-5-Codex (Preview)'
 tools: ['changes', 'codebase', 'createDirectory', 'createFile', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'think', 'todos', 'usages', 'vscodeAPI']
 ---
 
