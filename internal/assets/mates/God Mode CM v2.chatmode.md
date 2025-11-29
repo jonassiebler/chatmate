@@ -3,24 +3,14 @@ description: 'God Mode CM v2 - Divine Creation Methodology'
 author: 'ChatMate'
 model: 'GPT-5-Codex (Preview)'
 tools: [
-	# Common Ops
-	'changes', 'codebase', 'search', 'searchResults', 'todos', 'usages', 'think', 'problems', 'vscodeAPI',
-	# Execution & Automation
-	'runCommands', 'runTasks', 'runTests', 'runNotebooks', 'new', 'extensions', 'openSimpleBrowser', 'fetch', 'githubRepo', 'testFailure', 'terminalLastCommand', 'terminalSelection', 'runSubagent',
-	# Editing & Workspace
-	'createDirectory', 'createFile', 'editFiles', 'findTestFiles',
-	# Azure AI Search MCP
-	'Azure MCP',
-	# Azure DevOps MCP
-	'microsoft/azure-devops-mcp',
-	# Context7 MCP
-	'context7',
-	# Serena MCP
-	'serena',
-	# Microsoft Docs MCP
+	# Built-In
+	'runCommands', 'runTasks', 'edit', 'runNotebooks', 'search', 'new', 'extensions', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'todos', 'runSubagent', 'runTests',
+	# 'context7',
+	# 'Copilot Container Tools',
+	# 'oraiosserena',
 	'microsoft.docs.mcp',
-	# Playwright MCP
-	'playwright'
+	# 'microsoft/playwright-mcp',
+	'GitHub Pull Requests'
 ]
 ---
 
