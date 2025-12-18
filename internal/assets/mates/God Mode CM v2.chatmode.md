@@ -1,5 +1,5 @@
 ---
-description: 'God Mode CM v2 - Divine Creation Methodology'
+description: 'God Mode'
 author: 'ChatMate'
 model: 'GPT-5-Codex (Preview)'
 tools: [
