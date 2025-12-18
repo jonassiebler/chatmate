@@ -31,13 +31,13 @@ cd chatmate && go build -o chatmate .
 
 | Chatmate | Purpose | Example |
 |----------|---------|---------|
-| **Chatmate - Solve Issue** 🐛 | Debug systematically | `My React component won't render` |
+| **Chatmate - Solve Issue** 🐛 *(legacy)* | Debug systematically | `My React component won't render` |
 | **Code Review** 👁️ | Analyze & improve code | `Check this authentication logic` |
-| **Chatmate - Testing** 🧪 | Generate & debug tests | `Unit tests for this service` |
-| **Chatmate - Create PR** 📝 | Pull request creation | `PR for new auth feature` |
-| **Chatmate - Create Issue** 🎯 | GitHub issue creation | `Login fails on mobile` |
+| **Chatmate - Testing** 🧪 *(legacy)* | Generate & debug tests | `Unit tests for this service` |
+| **Chatmate - Create PR** 📝 *(legacy)* | Pull request creation | `PR for new auth feature` |
+| **Chatmate - Create Issue** 🎯 *(legacy)* | GitHub issue creation | `Login fails on mobile` |
 
-Run `chatmate list` for all available agents.
+Run `chatmate list` for modern agents and `chatmate legacy list` for the legacy catalog.
 
 ## 📋 Commands
 
@@ -47,6 +47,9 @@ chatmate list                    # Show available/installed
 chatmate status                  # Check installation health
 chatmate uninstall "Name"       # Remove specific chatmate
 chatmate hire --force           # Force reinstall
+chatmate legacy list            # Discover legacy chatmates
+chatmate legacy hire "Name"     # Manually install legacy chatmates
+chatmate legacy fire            # Interactive cleanup of legacy chatmates
 ```
 
 ## � Requirements & Troubleshooting
