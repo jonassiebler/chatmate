@@ -395,12 +395,32 @@ func (i *InstallerService) InstallChatmate(filename string, force bool) error {
 	filename = security.SanitizeInput(filename)
 
 	destPath := filepath.Join(i.manager.PromptsDir, filename)
+	fallbackFilename := security.SanitizeInput(i.manager.getDisplayName(filename) + ".chatmode.md")
+	if fallbackFilename == "" {
+		fallbackFilename = filename
+	}
+	fallbackPath := filepath.Join(i.manager.PromptsDir, fallbackFilename)
 
 	// Check if already installed and not forcing
 	if !force {
 		if _, err := os.Stat(destPath); err == nil {
 			fmt.Printf("⏭️  %s (already installed)\n", filename)
 			return nil
+		}
+
+		if fallbackFilename != filename {
+			if _, err := os.Stat(fallbackPath); err == nil {
+				fmt.Printf("⏭️  %s (legacy variant already installed)\n", fallbackFilename)
+				return nil
+			}
+		}
+	}
+
+	if force && fallbackFilename != filename {
+		if _, err := os.Stat(fallbackPath); err == nil {
+			if err := os.Remove(fallbackPath); err != nil {
+				return fmt.Errorf("failed to remove legacy variant %s: %w", fallbackFilename, err)
+			}
 		}
 	}
 

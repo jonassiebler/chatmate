@@ -53,24 +53,24 @@ var legacyListCmd = &cobra.Command{
 			return err
 		}
 
-		installedSet := make(map[string]bool)
-		for _, filename := range installed {
-			installedSet[filename] = true
-		}
-
-		sort.Strings(legacyChatmates)
+		installedSet := buildInstalledSet(installed)
+		records := buildLegacyRecords(chatMateManager, legacyChatmates, installedSet)
 
 		fmt.Println("Legacy ChatMate Agents:")
-		for _, filename := range legacyChatmates {
-			display := chatMateManager.DisplayName(filename)
+		installedCount := 0
+		for _, record := range records {
+			installed := record.canonicalInstalled || record.fallbackInstalled
+			if installed {
+				installedCount++
+			}
 			status := "⬜"
-			if installedSet[filename] {
+			if installed {
 				status = "✅"
 			}
-			fmt.Printf("%s %s\n", status, display)
+			fmt.Printf("%s %s\n", status, record.display)
 		}
 
-		fmt.Printf("\nSummary: %d/%d legacy chatmates installed\n", countMatching(legacyChatmates, installedSet), len(legacyChatmates))
+		fmt.Printf("\nSummary: %d/%d legacy chatmates installed\n", installedCount, len(records))
 		return nil
 	},
 }
@@ -120,20 +120,17 @@ var legacyFireCmd = &cobra.Command{
 			return nil
 		}
 
-		legacySet := make(map[string]bool)
-		for _, filename := range legacyChatmates {
-			legacySet[filename] = true
-		}
-
 		installed, err := chatMateManager.GetInstalledChatmates()
 		if err != nil {
 			return err
 		}
 
-		var legacyInstalled []string
-		for _, filename := range installed {
-			if legacySet[filename] {
-				legacyInstalled = append(legacyInstalled, filename)
+		records := buildLegacyRecords(chatMateManager, legacyChatmates, buildInstalledSet(installed))
+
+		var legacyInstalled []legacyRecord
+		for _, record := range records {
+			if record.canonicalInstalled || record.fallbackInstalled {
+				legacyInstalled = append(legacyInstalled, record)
 			}
 		}
 
@@ -142,16 +139,13 @@ var legacyFireCmd = &cobra.Command{
 			return nil
 		}
 
-		sort.Strings(legacyInstalled)
-
 		fmt.Println("🔥 Legacy ChatMate Cleanup")
 		fmt.Println("Each legacy chatmate will be removed only after individual confirmation. Press Enter to skip.")
 
 		reader := bufio.NewReader(os.Stdin)
 
-		for _, filename := range legacyInstalled {
-			display := chatMateManager.DisplayName(filename)
-			fmt.Printf("Remove %s? (y/N): ", display)
+		for _, record := range legacyInstalled {
+			fmt.Printf("Remove %s? (y/N): ", record.display)
 
 			input, err := reader.ReadString('\n')
 			if err != nil {
@@ -160,12 +154,18 @@ var legacyFireCmd = &cobra.Command{
 
 			response := strings.TrimSpace(input)
 			if response != "y" && response != "Y" && response != "yes" && response != "YES" {
-				fmt.Printf("⏭️  Skipped %s\n", display)
+				fmt.Printf("⏭️  Skipped %s\n", record.display)
 				continue
 			}
 
-			if err := chatMateManager.Uninstaller().UninstallChatmate(filename); err != nil {
+			if err := chatMateManager.Uninstaller().UninstallChatmate(record.filename); err != nil {
 				return err
+			}
+
+			if record.fallbackFilename != record.filename {
+				if err := chatMateManager.Uninstaller().UninstallChatmate(record.fallbackFilename); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -183,12 +183,54 @@ func init() {
 	rootCmd.AddCommand(legacyCmd)
 }
 
-func countMatching(filenames []string, installed map[string]bool) int {
-	total := 0
-	for _, name := range filenames {
-		if installed[name] {
-			total++
-		}
+type legacyRecord struct {
+	filename           string
+	display            string
+	fallbackFilename   string
+	canonicalInstalled bool
+	fallbackInstalled  bool
+}
+
+func buildInstalledSet(installed []string) map[string]bool {
+	set := make(map[string]bool)
+	for _, filename := range installed {
+		set[filename] = true
 	}
-	return total
+	return set
+}
+
+func buildLegacyRecords(manager *manager.ChatMateManager, legacyFilenames []string, installed map[string]bool) []legacyRecord {
+	records := make([]legacyRecord, 0, len(legacyFilenames))
+	for _, filename := range legacyFilenames {
+		display := manager.DisplayName(filename)
+		fallback := legacyFallbackFilename(manager, filename)
+		record := legacyRecord{
+			filename:           filename,
+			display:            display,
+			fallbackFilename:   fallback,
+			canonicalInstalled: installed[filename],
+		}
+		if fallback != filename {
+			record.fallbackInstalled = installed[fallback]
+		}
+		records = append(records, record)
+	}
+
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].display < records[j].display
+	})
+
+	return records
+}
+
+func legacyFallbackFilename(manager *manager.ChatMateManager, filename string) string {
+	display := strings.TrimSpace(manager.DisplayName(filename))
+	if display == "" {
+		return filename
+	}
+	fallback := strings.TrimSpace(display) + ".chatmode.md"
+	if fallback == filename {
+		return filename
+	}
+	return fallback
 }
