@@ -119,7 +119,7 @@ lint: ## Run code linters
 	@if command -v golangci-lint >/dev/null 2>&1; then \
 		golangci-lint run; \
 	else \
-		$(warning,"golangci-lint not installed, skipping advanced linting"); \
+		echo "golangci-lint not installed, skipping advanced linting"; \
 	fi
 	$(call success,"Linting completed")
 

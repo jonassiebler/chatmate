@@ -1,16 +1,63 @@
+version: "2"
+run:
+  go: "1.25"
+  issues-exit-code: 1
+  tests: true
+linters:
+  enable:
+    - goconst
+    - misspell
+  disable:
+    - dupl
+    - lll
+  settings:
+    goconst:
+      min-len: 2
+      min-occurrences: 3
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - goconst
+        path: _test\.go
+      - linters:
+          - goconst
+        path: cmd/
+      - linters:
+          - errcheck
+          - staticcheck
+        path: test/
+      - linters:
+          - errcheck
+          - staticcheck
+        path: internal/testing/
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - staticcheck
-    - path: test/
-      linters:
-        - errcheck
-        - staticcheck
-    - path: internal/testing/
-      linters:
-        - errcheck
-        - staticcheck
-  max-issues-per-linter: 10
-  max-same-issues: 5
+  max-issues-per-linter: 50
+  max-same-issues: 10
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - github.com/jonassiebler/chatmate
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
