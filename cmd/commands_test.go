@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -176,6 +177,51 @@ func TestTutorialCommandExists(t *testing.T) {
 	}
 }
 
+// TestLegacyCommandExists verifies the legacy command group registration.
+func TestLegacyCommandExists(t *testing.T) {
+	if legacyCmd == nil {
+		t.Fatal("legacy command is not defined")
+	}
+
+	if legacyCmd.Use != "legacy" {
+		t.Errorf("Unexpected legacy command use: %s", legacyCmd.Use)
+	}
+
+	subcommands := legacyCmd.Commands()
+	if len(subcommands) == 0 {
+		t.Fatal("legacy command should expose subcommands")
+	}
+
+	expected := map[string]bool{"list": false, "hire": false, "fire": false}
+	for _, cmd := range subcommands {
+		if _, ok := expected[cmd.Name()]; ok {
+			expected[cmd.Name()] = true
+		}
+	}
+
+	for name, seen := range expected {
+		if !seen {
+			t.Errorf("legacy command missing %s subcommand", name)
+		}
+	}
+}
+
+// TestLegacyHireCommandValidation ensures missing arguments return a helpful error.
+func TestLegacyHireCommandValidation(t *testing.T) {
+	// Capture output to suppress prompts
+	old := os.Stdout
+	os.Stdout = os.NewFile(0, os.DevNull)
+	defer func() { os.Stdout = old }()
+
+	err := legacyHireCmd.RunE(legacyHireCmd, []string{})
+	if err == nil {
+		t.Fatal("legacy hire should error when no chatmates are specified")
+	}
+	if !strings.Contains(err.Error(), "specify at least one legacy chatmate") {
+		t.Errorf("unexpected error message: %v", err)
+	}
+}
+
 // TestAllCommandsHaveRunE tests that all main commands have execution functions
 func TestAllCommandsHaveRunE(t *testing.T) {
 	commandsToTest := []*cobra.Command{
@@ -184,6 +230,9 @@ func TestAllCommandsHaveRunE(t *testing.T) {
 		statusCmd,
 		configCmd,
 		uninstallCmd,
+		legacyListCmd,
+		legacyHireCmd,
+		legacyFireCmd,
 	}
 
 	for _, cmd := range commandsToTest {
@@ -207,6 +256,7 @@ func TestCommandHelpText(t *testing.T) {
 		statusCmd,
 		configCmd,
 		uninstallCmd,
+		legacyCmd,
 	}
 
 	for _, cmd := range commandsToTest {

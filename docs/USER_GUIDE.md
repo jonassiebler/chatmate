@@ -146,6 +146,32 @@ chatmate uninstall "Documentation" "Optimize Issues"
 - Existing chat history and conversations are preserved
 - You can always reinstall chatmates later with `chatmate hire`
 
+### `chatmate legacy`
+
+Interact with legacy chatmates that are no longer part of the default hire workflow.
+
+**Subcommands:**
+- `chatmate legacy list` — Show which legacy chatmates exist and are installed
+- `chatmate legacy hire <names...>` — Manually install specific legacy chatmates (supports `--force`)
+- `chatmate legacy fire` — Interactively remove installed legacy chatmates with per-mate confirmation
+
+**Examples:**
+```bash
+# Inspect available legacy chatmates
+chatmate legacy list
+
+# Install a specific legacy chatmate
+chatmate legacy hire "Solve Issue"
+
+# Force reinstall legacy prompts after manual edits
+chatmate legacy hire --force "Solve Issue"
+
+# Clean up installed legacy chatmates with prompts per mate
+chatmate legacy fire
+```
+
+Legacy chatmates stay available for specialized workflows, but they do not appear in standard `chatmate hire` or `chatmate list` output.
+
 ### `chatmate config`
 
 Display detailed ChatMate configuration information.

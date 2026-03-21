@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Introduced `chatmate legacy` command group for listing, hiring, and cleaning up legacy chatmates outside the default workflows
+
 ### Changed
 - Renamed all chatmate files with "Chatmate -" prefix to prevent conflicts with user-created modes (#12)
 - Added safety prompts to Create Chatmode and Create Chatmate modes for publication intent and naming preferences

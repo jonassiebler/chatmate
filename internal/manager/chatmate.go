@@ -64,6 +64,7 @@ type ChatMateManager struct {
 	ScriptDir   string
 	MatesDir    string
 	PromptsDir  string
+	LegacyDir   string
 	UseEmbedded bool
 
 	// Service instances for modular functionality
@@ -127,6 +128,7 @@ func NewChatMateManager() (*ChatMateManager, error) {
 	}
 
 	matesDir := filepath.Join(scriptDir, "mates")
+	legacyDir := filepath.Join(matesDir, "legacy")
 
 	promptsDir, err := utils.GetVSCodePromptsDir()
 	if err != nil {
@@ -137,6 +139,7 @@ func NewChatMateManager() (*ChatMateManager, error) {
 	manager := &ChatMateManager{
 		ScriptDir:   scriptDir,
 		MatesDir:    matesDir,
+		LegacyDir:   legacyDir,
 		PromptsDir:  promptsDir,
 		UseEmbedded: useEmbedded,
 	}
@@ -187,8 +190,7 @@ func (cm *ChatMateManager) Status() *StatusService {
 //   - error: Directory reading or embedded resource access error
 func (cm *ChatMateManager) GetAvailableChatmates() ([]string, error) {
 	if cm.UseEmbedded {
-		// Use embedded files
-		return assets.GetEmbeddedMatesList()
+		return assets.GetEmbeddedModernMatesList()
 	}
 
 	// Use filesystem files
@@ -199,12 +201,57 @@ func (cm *ChatMateManager) GetAvailableChatmates() ([]string, error) {
 
 	var chatmates []string
 	for _, file := range files {
-		if !file.IsDir() && strings.HasSuffix(file.Name(), ".chatmode.md") {
+		if file.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(file.Name(), ".chatmode.md") {
 			chatmates = append(chatmates, file.Name())
 		}
 	}
 
 	return chatmates, nil
+}
+
+// GetAvailableLegacyChatmates returns the legacy chatmate files bundled with the CLI.
+func (cm *ChatMateManager) GetAvailableLegacyChatmates() ([]string, error) {
+	if cm.UseEmbedded {
+		return assets.GetEmbeddedLegacyMatesList()
+	}
+
+	files, err := os.ReadDir(cm.LegacyDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to read legacy mates directory: %w", err)
+	}
+
+	var chatmates []string
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(file.Name(), ".chatmode.md") {
+			chatmates = append(chatmates, file.Name())
+		}
+	}
+
+	return chatmates, nil
+}
+
+// GetAllRepositoryChatmates returns modern and legacy chatmates bundled with the CLI.
+func (cm *ChatMateManager) GetAllRepositoryChatmates() ([]string, error) {
+	modern, err := cm.GetAvailableChatmates()
+	if err != nil {
+		return nil, err
+	}
+
+	legacy, err := cm.GetAvailableLegacyChatmates()
+	if err != nil {
+		return nil, err
+	}
+
+	return append(modern, legacy...), nil
 }
 
 // GetInstalledChatmates returns all currently installed chatmate files.
@@ -248,9 +295,12 @@ func (cm *ChatMateManager) getDisplayName(filename string) string {
 	name := strings.TrimSuffix(filename, ".chatmode.md")
 
 	// Remove the "Chatmate - " prefix if present
-	if strings.HasPrefix(name, "Chatmate - ") {
-		name = strings.TrimPrefix(name, "Chatmate - ")
-	}
+	name = strings.TrimPrefix(name, "Chatmate - ")
 
 	return name
+}
+
+// DisplayName exposes the formatted chatmate name for external callers.
+func (cm *ChatMateManager) DisplayName(filename string) string {
+	return cm.getDisplayName(filename)
 }

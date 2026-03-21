@@ -2,6 +2,7 @@
 package manager
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -298,6 +299,14 @@ func (i *InstallerService) InstallSpecific(agentNames []string, force bool) erro
 		availableMap[displayName] = filename
 	}
 
+	legacyLookup := make(map[string]struct{})
+	if legacyChatmates, legacyErr := i.manager.GetAvailableLegacyChatmates(); legacyErr == nil {
+		for _, filename := range legacyChatmates {
+			displayName := i.manager.getDisplayName(filename)
+			legacyLookup[displayName] = struct{}{}
+		}
+	}
+
 	fmt.Printf("Installing specific chatmates: %v\n", agentNames)
 
 	// Install each specified agent
@@ -307,7 +316,46 @@ func (i *InstallerService) InstallSpecific(agentNames []string, force bool) erro
 				return err
 			}
 		} else {
+			if _, legacyCandidate := legacyLookup[agentName]; legacyCandidate {
+				return fmt.Errorf("chatmate %s is legacy; use 'chatmate legacy hire %s'", agentName, agentName)
+			}
 			return fmt.Errorf("chatmate not found: %s", agentName)
+		}
+	}
+
+	return nil
+}
+
+// InstallLegacy installs legacy chatmates by display name, allowing manual opt-in.
+func (i *InstallerService) InstallLegacy(agentNames []string, force bool) error {
+	if len(agentNames) == 0 {
+		fmt.Println("No legacy chatmates specified")
+		return nil
+	}
+
+	if err := i.checkAndRebuildIfNeeded(); err != nil {
+		fmt.Printf("⚠️  Build check failed, continuing with current binary: %v\n", err)
+	}
+
+	availableLegacy, err := i.manager.GetAvailableLegacyChatmates()
+	if err != nil {
+		return err
+	}
+
+	availableMap := make(map[string]string)
+	for _, filename := range availableLegacy {
+		displayName := i.manager.getDisplayName(filename)
+		availableMap[displayName] = filename
+	}
+
+	for _, agentName := range agentNames {
+		filename, exists := availableMap[agentName]
+		if !exists {
+			return fmt.Errorf("legacy chatmate not found: %s", agentName)
+		}
+
+		if err := i.InstallChatmate(filename, force); err != nil {
+			return err
 		}
 	}
 
@@ -347,12 +395,32 @@ func (i *InstallerService) InstallChatmate(filename string, force bool) error {
 	filename = security.SanitizeInput(filename)
 
 	destPath := filepath.Join(i.manager.PromptsDir, filename)
+	fallbackFilename := security.SanitizeInput(i.manager.getDisplayName(filename) + ".chatmode.md")
+	if fallbackFilename == "" {
+		fallbackFilename = filename
+	}
+	fallbackPath := filepath.Join(i.manager.PromptsDir, fallbackFilename)
 
 	// Check if already installed and not forcing
 	if !force {
 		if _, err := os.Stat(destPath); err == nil {
 			fmt.Printf("⏭️  %s (already installed)\n", filename)
 			return nil
+		}
+
+		if fallbackFilename != filename {
+			if _, err := os.Stat(fallbackPath); err == nil {
+				fmt.Printf("⏭️  %s (legacy variant already installed)\n", fallbackFilename)
+				return nil
+			}
+		}
+	}
+
+	if force && fallbackFilename != filename {
+		if _, err := os.Stat(fallbackPath); err == nil {
+			if err := os.Remove(fallbackPath); err != nil {
+				return fmt.Errorf("failed to remove legacy variant %s: %w", fallbackFilename, err)
+			}
 		}
 	}
 
@@ -369,6 +437,20 @@ func (i *InstallerService) InstallChatmate(filename string, force bool) error {
 	} else {
 		// Use external file
 		sourcePath := filepath.Join(i.manager.MatesDir, filename)
+		if _, statErr := os.Stat(sourcePath); errors.Is(statErr, os.ErrNotExist) {
+			altPath := filepath.Join(i.manager.LegacyDir, filename)
+			if _, altErr := os.Stat(altPath); altErr == nil {
+				sourcePath = altPath
+			} else {
+				if !errors.Is(altErr, os.ErrNotExist) {
+					return fmt.Errorf("failed to inspect chatmate file %s: %w", altPath, altErr)
+				}
+				return fmt.Errorf("failed to locate chatmate file %s", filename)
+			}
+		} else if statErr != nil {
+			return fmt.Errorf("failed to inspect chatmate file %s: %w", sourcePath, statErr)
+		}
+
 		content, err = os.ReadFile(sourcePath)
 		if err != nil {
 			return fmt.Errorf("failed to read chatmate file %s: %w", sourcePath, err)
